@@ -17,11 +17,10 @@
 enum CalibrationState {
     NEEDS_CALIBRATION,
     FIND_UPPER,
-    FOUND_UPPER,
     FIND_LOWER,
-    FOUND_LOWER,
     MOVING_TO_ZERO,
-    CALIBRATED
+    CALIBRATED,
+    EMERGENCY_STOP
 };
 
 CalibrationState calibrationState = NEEDS_CALIBRATION;
@@ -46,15 +45,25 @@ void limitSwitch_pressedCallback() {
             Serial.print("Found upper bound!!!  Position is: ");
             Serial.print(stepper.currentPosition());
             Serial.println(".  Stopping...");
-            stepper.quickStop();
-            calibrationState = FOUND_UPPER;
+            stepper.setCurrentPosition(0);
+            stepper.moveTo(-INFINITE_MOTION);
+            calibrationState = FIND_LOWER;
+            Serial.println("Now looking for lower bound");
+
             break;
         case FIND_LOWER:
             Serial.print("Found lower bound!!!  Position is: ");
             Serial.print(stepper.currentPosition());
             Serial.println(".  Stopping...");
-            stepper.quickStop();
-            calibrationState = FOUND_LOWER;
+            Serial.println(stepper.currentPosition());
+            sliderDistanceSteps = abs(stepper.currentPosition()) - 2 * BUFFER_STEPS;
+            Serial.print("Slider Distance is ");
+            Serial.print(sliderDistanceSteps);
+            Serial.println(" steps");
+            stepper.setCurrentPosition(-BUFFER_STEPS);
+            Serial.println("Moving to zero point...");
+            stepper.moveTo(0);
+            calibrationState = MOVING_TO_ZERO;
 
             break;
         default:
@@ -64,8 +73,7 @@ void limitSwitch_pressedCallback() {
             Serial.println(" steps ");
             Serial.print(stepper.distanceToGo());
             Serial.println(" steps was remaining....  Gonna stop, fuck this shit....");
-
-            stepper.quickStop();
+            calibrationState = EMERGENCY_STOP;
     }
 }
 
@@ -117,30 +125,6 @@ void loop()
             stepper.moveTo(INFINITE_MOTION);
             calibrationState = FIND_UPPER;
             break;
-        case FOUND_UPPER:
-            if(!stepper.isRunning()) {
-                Serial.print("Stopped.  Current Position: ");
-                Serial.println(stepper.currentPosition());
-                stepper.setCurrentPosition(0);
-                stepper.moveTo(-INFINITE_MOTION);
-                calibrationState = FIND_LOWER;
-                Serial.println("Now looking for lower bound");
-            }
-            break;
-        case FOUND_LOWER:
-            if(!stepper.isRunning()) {
-                Serial.print("Stopped.  Current Position: ");
-                Serial.println(stepper.currentPosition());
-                sliderDistanceSteps = abs(stepper.currentPosition()) - 2 * BUFFER_STEPS;
-                Serial.print("Slider Distance is ");
-                Serial.print(sliderDistanceSteps);
-                Serial.println(" steps");
-                stepper.setCurrentPosition(-BUFFER_STEPS);
-                Serial.println("Moving to zero point...");
-                stepper.moveTo(0);
-                calibrationState = MOVING_TO_ZERO;
-            }
-            break;
         case MOVING_TO_ZERO:
             if(!stepper.isRunning()) {
                 Serial.print("Stopped.  Current Position: ");
@@ -157,7 +141,8 @@ void loop()
     }
 
     taskManager.Loop();
-    stepper.run();
+    if(calibrationState != EMERGENCY_STOP)
+        stepper.run();
 }
 
 void onEnableMotor(uint32_t deltaTime) {
