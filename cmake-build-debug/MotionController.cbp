@@ -246,6 +246,15 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/IntervalometerSettings.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/IntervalometerSettings.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/IntervalometerStateMachine.h">
+			<Option target="MotionController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/main.cpp">
 			<Option target="MotionController"/>
 		</Unit>
