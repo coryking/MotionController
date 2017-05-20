@@ -246,9 +246,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/cory/ClionProjects/MotionController/src/QuickStopStepper.h">
-			<Option target="MotionController"/>
-		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/main.cpp">
 			<Option target="MotionController"/>
 		</Unit>

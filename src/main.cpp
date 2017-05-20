@@ -1,4 +1,4 @@
-#include "QuickStopStepper.h"
+#include <AccelStepper.h>
 #include <Task.h>
 #include <InputDebounce.h>
 
@@ -27,7 +27,7 @@ CalibrationState calibrationState = NEEDS_CALIBRATION;
 long sliderDistanceSteps = 0;
 
 // Define a stepper and the pins it will use
-QuickStopStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
+AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 
 TaskManager taskManager;
 
