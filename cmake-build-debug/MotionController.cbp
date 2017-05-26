@@ -39,7 +39,7 @@
 					<Add option="-DF_CPU=80000000L"/>
 					<Add option="-D__ets__"/>
 					<Add option="-DICACHE_FLASH"/>
-					<Add option="-DPLATFORMIO=30201"/>
+					<Add option="-DPLATFORMIO=30300"/>
 					<Add option="-DESP8266"/>
 					<Add option="-DARDUINO_ARCH_ESP8266"/>
 					<Add option="-DARDUINO_ESP8266_NODEMCU"/>
@@ -47,10 +47,12 @@
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/tools/sdk/lwip/include"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/cores/esp8266"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/variants/nodemcu"/>
-					<Add directory="/Users/cory/ClionProjects/MotionController/src"/>
 					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/AccelStepper_ID265/src"/>
+					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/RTClib_ID83"/>
 					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/InputDebounce_ID123/src"/>
+					<Add directory="/Users/cory/ClionProjects/MotionController/src"/>
 					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/Task_ID272/src"/>
+					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/Time_ID44"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM"/>
@@ -103,7 +105,7 @@
 					<Add option="-DF_CPU=80000000L"/>
 					<Add option="-D__ets__"/>
 					<Add option="-DICACHE_FLASH"/>
-					<Add option="-DPLATFORMIO=30201"/>
+					<Add option="-DPLATFORMIO=30300"/>
 					<Add option="-DESP8266"/>
 					<Add option="-DARDUINO_ARCH_ESP8266"/>
 					<Add option="-DARDUINO_ESP8266_NODEMCU"/>
@@ -111,10 +113,12 @@
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/tools/sdk/lwip/include"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/cores/esp8266"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/variants/nodemcu"/>
-					<Add directory="/Users/cory/ClionProjects/MotionController/src"/>
 					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/AccelStepper_ID265/src"/>
+					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/RTClib_ID83"/>
 					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/InputDebounce_ID123/src"/>
+					<Add directory="/Users/cory/ClionProjects/MotionController/src"/>
 					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/Task_ID272/src"/>
+					<Add directory="/Users/cory/ClionProjects/MotionController/.piolibdeps/Time_ID44"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src"/>
 					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM"/>
@@ -246,6 +250,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/I2C.h">
+			<Option target="MotionController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/IntervalometerSettings.cpp">
 			<Option target="MotionController"/>
 		</Unit>
@@ -255,7 +262,22 @@
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/IntervalometerStateMachine.h">
 			<Option target="MotionController"/>
 		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Pins.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/StateContext.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/StateContext.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/States.h">
+			<Option target="MotionController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/main.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/rtc.h">
 			<Option target="MotionController"/>
 		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/CMakeLists.txt">

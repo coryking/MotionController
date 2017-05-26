@@ -4,14 +4,12 @@
 #include <IntervalometerSettings.h>
 #include <IntervalometerStateMachine.h>
 
+#include "Pins.h"
+
+#include "I2C.h"
+#include "rtc.h"
 
 #define BUTTON_DEBOUNCE_DELAY   20   // [ms]
-
-
-#define DIR D1
-#define STEP D2
-#define LIMIT_SWITCH D6 // yellow wire
-#define CAMERA_PIN D5 // green whire
 
 #define BUFFER_STEPS 40 // "padding" for the limit switches...
 
@@ -39,7 +37,6 @@ AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepp
 
 IntervalometerStateMachine *stateMachine = NULL;
 IntervalometerSettings *settings = NULL;
-
 
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
 
@@ -114,23 +111,22 @@ void setupIntervalometer() {
 void setup()
 {
 
+    Serial.begin(9600);
+
     randomSeed(analogRead(0));
     pinMode(CAMERA_PIN, OUTPUT);
     digitalWrite(CAMERA_PIN, LOW);
 
-    Serial.begin(9600);
+    setupI2C();
+    globalRtc = setupRtc(&Serial);
 
     // Change these to suit your stepper if you want
-    stepper.setEnablePin(D8);
+    //stepper.setEnablePin(D8);
     stepper.setMaxSpeed(1000);
     stepper.setAcceleration(4000);
-    //stepper.moveTo(5500);
 
     limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
     limitSwitch.setup(LIMIT_SWITCH, BUTTON_DEBOUNCE_DELAY, InputDebounce::PIM_INT_PULL_UP_RES);
-
-    //taskManager.StartTask(&enableMotorTask);
-    //taskManager.StartTask(&disableMotorTask);
 
 
 }
