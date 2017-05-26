@@ -37,8 +37,8 @@ long sliderDistanceSteps = 0;
 // Define a stepper and the pins it will use
 AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 
-IntervalometerStateMachine *stateMachine = NULL;
-IntervalometerSettings *settings = NULL;
+IntervalometerStateMachine *ivStateMachine = NULL;
+IntervalometerSettings *ivSettings = NULL;
 
 SystemState systemState();
 
@@ -92,28 +92,28 @@ void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
 void setupIntervalometer() {
-    settings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
-    stateMachine = new IntervalometerStateMachine();
+    ivSettings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
+    ivStateMachine = new IntervalometerStateMachine();
 
-    stateMachine->setCloseShutterCb([](){
+    ivStateMachine->setCloseShutterCb([](){
         Serial.println("Setting camera pin low!");
         digitalWrite(CAMERA_PIN, LOW);
     });
 
-    stateMachine->setOpenShutterCb([](){
+    ivStateMachine->setOpenShutterCb([](){
         Serial.println("Setting camera pin high!");
         digitalWrite(CAMERA_PIN, HIGH);
     });
 
-    stateMachine->setMoveStepperToRelativeCallback([](long moveTo){
+    ivStateMachine->setMoveStepperToRelativeCallback([](long moveTo){
         stepper.move(moveTo);
     });
 
-    stateMachine->setMoveStepperToAbsolutePositionCb([](long moveTo){
+    ivStateMachine->setMoveStepperToAbsolutePositionCb([](long moveTo){
         stepper.moveTo(moveTo);
     });
 
-    stateMachine->setStepperRunningCallback([]() {
+    ivStateMachine->setStepperRunningCallback([]() {
         return stepper.isRunning();
     });
 }
@@ -164,7 +164,7 @@ void loop()
                 Serial.println("Fully Calibrated and ready for action!");
                 setupIntervalometer();
                 calibrationState = CALIBRATED;
-                stateMachine->start(settings);
+                ivStateMachine->start(ivSettings);
             }
             break;
         default:
@@ -173,8 +173,8 @@ void loop()
 
     if(calibrationState != EMERGENCY_STOP) {
         stepper.run();
-        if(stateMachine)
-            stateMachine->run();
+        if(ivStateMachine)
+            ivStateMachine->run();
     }
 
 }
