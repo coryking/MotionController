@@ -98,12 +98,15 @@ public:
                 break;
             case PAUSED:
                 if(currentDuration >= this->settings->getIntervalMs()) {
-                    Serial.print("Moving out of paused... actual duration was ");
+                    Serial.print("Moving out of paused... Requested duration was ");
+                    Serial.print(this->settings->getIntervalMs());
+                    Serial.print(" actual duration was ");
                     Serial.println(currentDuration);
+                    this->currentFrame++;
+
                     if(this->currentFrame >= this->settings->getTotalFrames()) {
                         this->transitionToFinished();
                     } else {
-                        this->currentFrame++;
                         this->transitionToShutter();
                     }
                 }
@@ -141,7 +144,7 @@ private:
     InvokeShutterCallbackFn closeShutterCb;
 
     void transitionToStart() {
-        this->currentFrame = 0;
+        this->currentFrame = 1;
         this->startMs = millis();
         this->setCurrentState(START);
     }

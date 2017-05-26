@@ -15,6 +15,11 @@
 
 #define BUFFER_STEPS 40 // "padding" for the limit switches...
 
+#define TOTAL_SHOTS 300
+#define INTERVAL 1000
+#define TIME_PER_SHOT 250
+#define TIME_FOR_SHUTTER_TRIGGER 200
+
 #define INFINITE_MOTION 100000
 
 enum CalibrationState {
@@ -80,7 +85,7 @@ void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
 void setupIntervalometer() {
-    settings = new IntervalometerSettings(10, 0, sliderDistanceSteps, 2000, 500,100);
+    settings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
     stateMachine = new IntervalometerStateMachine(settings);
 
     stateMachine->setCloseShutterCb([](){
@@ -110,12 +115,15 @@ void setup()
 {
 
     randomSeed(analogRead(0));
+    pinMode(CAMERA_PIN, OUTPUT);
+    digitalWrite(CAMERA_PIN, LOW);
+
     Serial.begin(9600);
 
     // Change these to suit your stepper if you want
     stepper.setEnablePin(D8);
     stepper.setMaxSpeed(1000);
-    stepper.setAcceleration(400);
+    stepper.setAcceleration(4000);
     //stepper.moveTo(5500);
 
     limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
