@@ -9,6 +9,8 @@
 #include "I2C.h"
 #include "rtc.h"
 
+#include "SystemState.h"
+
 #define BUTTON_DEBOUNCE_DELAY   20   // [ms]
 
 #define BUFFER_STEPS 40 // "padding" for the limit switches...
@@ -38,7 +40,15 @@ AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepp
 IntervalometerStateMachine *stateMachine = NULL;
 IntervalometerSettings *settings = NULL;
 
+SystemState systemState();
+
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
+
+volatile bool didGetAlarm = false;
+
+void alarm_callback() {
+    didGetAlarm = true;
+}
 
 void limitSwitch_pressedCallback() {
     switch(calibrationState) {
@@ -83,7 +93,7 @@ void doNothingDurationCallback(unsigned long duration) {}
 
 void setupIntervalometer() {
     settings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
-    stateMachine = new IntervalometerStateMachine(settings);
+    stateMachine = new IntervalometerStateMachine();
 
     stateMachine->setCloseShutterCb([](){
         Serial.println("Setting camera pin low!");
@@ -118,7 +128,7 @@ void setup()
     digitalWrite(CAMERA_PIN, LOW);
 
     setupI2C();
-    globalRtc = setupRtc(&Serial);
+    setupRtc(&Serial);
 
     // Change these to suit your stepper if you want
     //stepper.setEnablePin(D8);
@@ -154,7 +164,7 @@ void loop()
                 Serial.println("Fully Calibrated and ready for action!");
                 setupIntervalometer();
                 calibrationState = CALIBRATED;
-                stateMachine->start();
+                stateMachine->start(settings);
             }
             break;
         default:

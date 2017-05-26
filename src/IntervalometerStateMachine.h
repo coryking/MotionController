@@ -11,6 +11,7 @@
 #include "IntervalometerSettings.h"
 
 enum IntervalometerStates {
+    IDLE,
     START,
     POSITIONING,
     SHUTTER,
@@ -26,8 +27,8 @@ public:
     typedef std::function<void(long)> MoveStepperToPositionFn;
     typedef std::function<void()> InvokeShutterCallbackFn;
 
-    IntervalometerStateMachine(IntervalometerSettings *settings) : settings(settings) {
-        setCurrentState(FINISHED);
+    IntervalometerStateMachine() {
+        setCurrentState(IDLE);
 
     }
 
@@ -63,7 +64,8 @@ public:
         IntervalometerStateMachine::closeShutterCb = closeShutterCb;
     }
 
-    void start() {
+    void start(IntervalometerSettings *settings) {
+        this->settings = settings;
         this->transitionToStart();
     }
 
@@ -111,6 +113,7 @@ public:
                     }
                 }
                 break;
+            case IDLE:
             case FINISHED:
             default:
                 break;

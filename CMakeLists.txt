@@ -51,4 +51,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/StateContext.cpp src/StateContext.h src/States.h)
+add_executable(${PROJECT_NAME} ${SRC_LIST} src/rtc.cpp)

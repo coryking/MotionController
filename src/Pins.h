@@ -13,4 +13,6 @@
 #define SDA_PIN D7
 #define SCL_PIN D8
 
+#define RTC_INTERUPT_PIN D4
+
 #endif //MOTIONCONTROLLER_PINS_H
