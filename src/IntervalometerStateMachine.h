@@ -124,14 +124,16 @@ protected:
     void setCurrentState(IntervalometerStates state) {
         Serial.print("Going to state: ");
         Serial.print(state);
-        Serial.print(" --  ");
-        Serial.print(this->settings->getTotalFrames() - currentFrame);
-        Serial.println(" shots remaining");
+        if(this->settings != NULL) {
+            Serial.print(" --  ");
+            Serial.print(this->settings->getTotalFrames() - currentFrame);
+            Serial.println(" shots remaining");
+        }
         currentState = state;
     }
 
 private:
-    IntervalometerSettings *settings;
+    IntervalometerSettings *settings = NULL;
 
     IntervalometerStates currentState;
     // when the shutter started

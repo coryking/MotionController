@@ -7,13 +7,13 @@
 
 #define DIR D1
 #define STEP D2
-#define LIMIT_SWITCH D6 // yellow wire
-#define CAMERA_PIN D5 // green whire
+#define LIMIT_SWITCH D7 // yellow wire
+#define CAMERA_PIN D4 // green whire
 
-#define SDA_PIN D7
-#define SCL_PIN D8
+#define SDA_PIN D5
+#define SCL_PIN D6
 
-#define RTC_INTERUPT_PIN D4
+#define RTC_INTERUPT_PIN D3
 
 #define INFINITE_MOTION 100000
 #define BUFFER_STEPS 40 // "padding" for the limit switches...

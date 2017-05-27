@@ -48,6 +48,7 @@ STATE_DEFINE(Homer, Unhomed, NoEventData) {
 STATE_DEFINE(Homer, FindingUpper, NoEventData) {
     Serial.println("Uncalibrated.  Gonna calibrate this shit....");
     this->stepper->moveTo(INFINITE_MOTION);
+    this->invokeStartedHomingCb();
 }
 
 STATE_DEFINE(Homer, FindingLower, NoEventData) {
@@ -77,10 +78,18 @@ STATE_DEFINE(Homer, Homed, NoEventData) {
     this->invokeSliderHomedCb(_sliderDistance);
 }
 
+STATE_DEFINE(Homer, EmergencyStopped, NoEventData) {
+    // no-op for now...
+}
+
 void Homer::setSliderHomedCb(const Homer::SliderHomedCb &sliderSetCb) {
     Homer::sliderSetCb = sliderSetCb;
 }
 
 void Homer::setStepper(AccelStepper *stepper) {
     Homer::stepper = stepper;
+}
+
+void Homer::setStartedHomingCb(const Homer::StateChangedCb &startedHomingCb) {
+    Homer::startedHomingCb = startedHomingCb;
 }

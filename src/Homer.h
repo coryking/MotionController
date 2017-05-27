@@ -15,15 +15,21 @@
 class Homer : public StateMachine {
 public:
     typedef std::function<void(ulong sliderDistance)> SliderHomedCb;
+    typedef std::function<void()> StateChangedCb;
 
     Homer() : StateMachine(ST_MAX_STATES) {}
 
     void StartHoming();
     void LimitSwitchPressed();
     void MotorStopped();
+    void Poll();
 
     bool isHoming() {
         return (this->GetCurrentState() != ST_HOMED || this->GetCurrentState() != ST_UNHOMED);
+    }
+
+    bool isEmergencyStopped() {
+        return (this->GetCurrentState() == ST_EMERGENCY_STOP);
     }
 
     ulong getSliderDistance() const {
@@ -34,15 +40,24 @@ public:
 
     void setSliderHomedCb(const SliderHomedCb &sliderSetCb);
 
+    void setStartedHomingCb(const StateChangedCb &startedHomingCb);
+
 private:
     ulong _sliderDistance;
     SliderHomedCb sliderSetCb;
+    StateChangedCb startedHomingCb;
 
     AccelStepper* stepper;
 
     void invokeSliderHomedCb(ulong sliderDistance) {
         if(sliderSetCb) {
             sliderSetCb(_sliderDistance);
+        }
+    }
+
+    void invokeStartedHomingCb() {
+        if(startedHomingCb) {
+            startedHomingCb();
         }
     }
 

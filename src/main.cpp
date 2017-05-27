@@ -20,24 +20,13 @@
 #define TIME_FOR_SHUTTER_TRIGGER 200
 
 
-
-enum CalibrationState {
-    NEEDS_CALIBRATION,
-    FIND_UPPER,
-    FIND_LOWER,
-    MOVING_TO_ZERO,
-    CALIBRATED,
-    EMERGENCY_STOP
-};
-
-CalibrationState calibrationState = NEEDS_CALIBRATION;
 long sliderDistanceSteps = 0;
 
 // Define a stepper and the pins it will use
 AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 
 IntervalometerStateMachine *ivStateMachine = NULL;
-IntervalometerSettings *ivSettings = NULL;
+//IntervalometerSettings *ivSettings = NULL;
 
 SystemState systemState;
 Homer homer;
@@ -45,54 +34,20 @@ Homer homer;
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
 
 volatile bool didGetAlarm = false;
-
+bool previousMotorRunState = false;
+void handleMotorRunState();
 void alarm_callback() {
     didGetAlarm = true;
 }
 
 void limitSwitch_pressedCallback() {
-    switch(calibrationState) {
-        case FIND_UPPER:
-            Serial.print("Found upper bound!!!  Position is: ");
-            Serial.print(stepper.currentPosition());
-            Serial.println(".  Stopping...");
-            stepper.setCurrentPosition(0);
-            stepper.moveTo(-INFINITE_MOTION);
-            calibrationState = FIND_LOWER;
-            Serial.println("Now looking for lower bound");
-
-            break;
-        case FIND_LOWER:
-            Serial.print("Found lower bound!!!  Position is: ");
-            Serial.print(stepper.currentPosition());
-            Serial.println(".  Stopping...");
-            Serial.println(stepper.currentPosition());
-            sliderDistanceSteps = abs(stepper.currentPosition()) - 2 * BUFFER_STEPS;
-            Serial.print("Slider Distance is ");
-            Serial.print(sliderDistanceSteps);
-            Serial.println(" steps");
-            stepper.setCurrentPosition(-BUFFER_STEPS);
-            Serial.println("Moving to zero point...");
-            stepper.moveTo(0);
-            calibrationState = MOVING_TO_ZERO;
-
-            break;
-        default:
-            Serial.println("Oh shit, yo!  We hit an end!!");
-            Serial.print("Hit at ");
-            Serial.print(stepper.currentPosition());
-            Serial.println(" steps ");
-            Serial.print(stepper.distanceToGo());
-            Serial.println(" steps was remaining....  Gonna stop, fuck this shit....");
-            calibrationState = EMERGENCY_STOP;
-    }
+    homer.LimitSwitchPressed();
 }
 
 void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
 void setupIntervalometer() {
-    ivSettings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
     ivStateMachine = new IntervalometerStateMachine();
 
     ivStateMachine->setCloseShutterCb([](){
@@ -118,6 +73,13 @@ void setupIntervalometer() {
     });
 }
 
+void startIntervalometer() {
+    sliderDistanceSteps = homer.getSliderDistance();
+    IntervalometerSettings *ivSettings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
+    setupIntervalometer();
+    ivStateMachine->start(ivSettings);
+}
+
 void setup()
 {
 
@@ -140,48 +102,36 @@ void setup()
     stepper.setAcceleration(4000);
 
     homer.setStepper(&stepper);
-    homer.setSliderHomedCb([]() {
-        systemState.HomingComplete();
+    homer.setSliderHomedCb([](ulong sliderDistance) {
+        Serial.println("Slider Has been homed according to our callback!");
+        startIntervalometer();
     });
 
-
-
+    homer.StartHoming();
 }
 
 void loop()
 {
     unsigned long now = millis();
     limitSwitch.process(now);
+    handleMotorRunState();
 
-    switch(calibrationState) {
-        case CALIBRATED:
-            break;
-        case NEEDS_CALIBRATION:
-            Serial.println("Uncalibrated.  Gonna calibrate this shit....");
-            stepper.moveTo(INFINITE_MOTION);
-            calibrationState = FIND_UPPER;
-            break;
-        case MOVING_TO_ZERO:
-            if(!stepper.isRunning()) {
-                Serial.print("Stopped.  Current Position: ");
-                Serial.println(stepper.currentPosition());
-                Serial.print("Slider Distance is ");
-                Serial.print(sliderDistanceSteps);
-                Serial.println(" steps");
-                Serial.println("Fully Calibrated and ready for action!");
-                setupIntervalometer();
-                calibrationState = CALIBRATED;
-                ivStateMachine->start(ivSettings);
-            }
-            break;
-        default:
-            break;
-    }
-
-    if(calibrationState != EMERGENCY_STOP) {
+    if(!homer.isEmergencyStopped()) {
         stepper.run();
         if(ivStateMachine)
             ivStateMachine->run();
     }
 
+}
+
+void handleMotorRunState() {
+    if(previousMotorRunState != stepper.isRunning()) {
+        if(stepper.isRunning()) {
+            // signal that the stepper has started to move
+        } else {
+            // signal that the stepper has stopped
+            homer.MotorStopped();
+        }
+    }
+    previousMotorRunState = stepper.isRunning();
 }

@@ -70,6 +70,14 @@ void SystemState::ShootingComplete() {
 }
 
 
+STATE_DEFINE(SystemState,   Homing, NoEventData) {
+
+}
+
+STATE_DEFINE(SystemState, Unhomed, NoEventData) {
+
+}
+
 STATE_DEFINE(SystemState,   Idle,   NoEventData)
 {
     // Noop
