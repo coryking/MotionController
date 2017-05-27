@@ -15,4 +15,8 @@
 
 #define RTC_INTERUPT_PIN D4
 
+#define INFINITE_MOTION 100000
+#define BUFFER_STEPS 40 // "padding" for the limit switches...
+
+
 #endif //MOTIONCONTROLLER_PINS_H

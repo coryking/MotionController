@@ -252,7 +252,25 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/cory/ClionProjects/MotionController/src/EventData.h">
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Allocator.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Allocator.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/DataTypes.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Fault.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Fault.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Homer.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Homer.h">
 			<Option target="MotionController"/>
 		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/I2C.h">
@@ -265,6 +283,12 @@
 			<Option target="MotionController"/>
 		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Pins.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/StateMachine.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/StateMachine.h">
 			<Option target="MotionController"/>
 		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/SystemState.cpp">
@@ -280,6 +304,15 @@
 			<Option target="MotionController"/>
 		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/rtc.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/stdafx.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/stdafx.h">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/targetver.h">
 			<Option target="MotionController"/>
 		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/CMakeLists.txt">

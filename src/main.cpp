@@ -10,17 +10,16 @@
 #include "rtc.h"
 
 #include "SystemState.h"
+#include "Homer.h"
 
 #define BUTTON_DEBOUNCE_DELAY   20   // [ms]
-
-#define BUFFER_STEPS 40 // "padding" for the limit switches...
 
 #define TOTAL_SHOTS 300
 #define INTERVAL 1000
 #define TIME_PER_SHOT 250
 #define TIME_FOR_SHUTTER_TRIGGER 200
 
-#define INFINITE_MOTION 100000
+
 
 enum CalibrationState {
     NEEDS_CALIBRATION,
@@ -40,7 +39,8 @@ AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepp
 IntervalometerStateMachine *ivStateMachine = NULL;
 IntervalometerSettings *ivSettings = NULL;
 
-SystemState systemState();
+SystemState systemState;
+Homer homer;
 
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
 
@@ -130,13 +130,20 @@ void setup()
     setupI2C();
     setupRtc(&Serial);
 
+    limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
+    limitSwitch.setup(LIMIT_SWITCH, BUTTON_DEBOUNCE_DELAY, InputDebounce::PIM_INT_PULL_UP_RES);
+
+
     // Change these to suit your stepper if you want
     //stepper.setEnablePin(D8);
     stepper.setMaxSpeed(1000);
     stepper.setAcceleration(4000);
 
-    limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
-    limitSwitch.setup(LIMIT_SWITCH, BUTTON_DEBOUNCE_DELAY, InputDebounce::PIM_INT_PULL_UP_RES);
+    homer.setStepper(&stepper);
+    homer.setSliderHomedCb([]() {
+        systemState.HomingComplete();
+    });
+
 
 
 }
