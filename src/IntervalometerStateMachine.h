@@ -72,7 +72,7 @@ public:
     void run() {
         unsigned long currentTime = millis();
         unsigned long currentDuration = currentTime - startMs;
-        bool isStopped = !getRunningCallback();
+        bool isStopped = !invokeGetRunningCallback();
 
         switch(currentState) {
             case START:
@@ -147,6 +147,14 @@ private:
 
     InvokeShutterCallbackFn openShutterCb;
     InvokeShutterCallbackFn closeShutterCb;
+
+    bool invokeGetRunningCallback() {
+        if(getRunningCallback) {
+            return getRunningCallback();
+        } else {
+            return false;
+        }
+    }
 
     void transitionToStart() {
         this->currentFrame = 1;

@@ -19,6 +19,7 @@ using namespace std;
  */
 
 void SystemState::StartAlarm(AlarmData *data) {
+    Serial.println("Starting Alarm!");
     BEGIN_TRANSITION_MAP
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -28,14 +29,26 @@ void SystemState::StartAlarm(AlarmData *data) {
     END_TRANSITION_MAP(data)
 }
 
-void SystemState::BeginShooting(ShootingData* data) {
+void SystemState::AlarmFired() {
+    Serial.println("Alarm Fired!");
+    BEGIN_TRANSITION_MAP
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
+                    TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_IDLE
+                    TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_WAIT_FOR_ALARM
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
+    END_TRANSITION_MAP(NULL)
+}
+
+void SystemState::BeginShooting() {
+    Serial.println("BeginShooting!");
     BEGIN_TRANSITION_MAP
         TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
         TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_WAIT_FOR_ALARM
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
-    END_TRANSITION_MAP(data)
+    END_TRANSITION_MAP(NULL)
 }
 
 
@@ -83,8 +96,8 @@ STATE_DEFINE(SystemState,   Idle,   NoEventData)
     // Noop
 }
 
-STATE_DEFINE(SystemState,   Shooting,  ShootingData) {
-    data->stateMachine->start(data->settings);
+STATE_DEFINE(SystemState,   Shooting,  NoEventData) {
+    this->stateMachine.start(this->settings);
 }
 
 STATE_DEFINE(SystemState,   WaitForAlarm, AlarmData) {
@@ -97,13 +110,38 @@ STATE_DEFINE(SystemState,   WaitForAlarm, AlarmData) {
     );
     globalRtc.SetAlarmOne(alarm1);
 
-
-    attachInterrupt(RTC_INTERUPT_PIN, data->interruptServiceCallback, FALLING);
-
     globalRtc.LatchAlarmsTriggeredFlags();
 
 }
 
+GUARD_DEFINE(SystemState, HasShootingData, NoEventData) {
+    return (this->settings != NULL);
+}
+
 EXIT_DEFINE(SystemState, ExitWaitForAlarm) {
     detachInterrupt(RTC_INTERUPT_PIN);
+}
+
+SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
+    stateMachine.setCloseShutterCb([](){
+        Serial.println("Setting camera pin low!");
+        digitalWrite(CAMERA_PIN, LOW);
+    });
+
+    stateMachine.setOpenShutterCb([](){
+        Serial.println("Setting camera pin high!");
+        digitalWrite(CAMERA_PIN, HIGH);
+    });
+
+    stateMachine.setMoveStepperToRelativeCallback([this](long moveTo){
+        stepper->move(moveTo);
+    });
+
+    stateMachine.setMoveStepperToAbsolutePositionCb([this](long moveTo){
+        stepper->moveTo(moveTo);
+    });
+
+    stateMachine.setStepperRunningCallback([this]() {
+        return stepper->isRunning();
+    });
 }

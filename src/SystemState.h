@@ -7,6 +7,7 @@
 
 
 #include <Arduino.h>
+#include <AccelStepper.h>
 
 #include "StateMachine.h"
 #include "IntervalometerSettings.h"
@@ -20,27 +21,39 @@ struct AlarmData : public EventData {
     uint8_t hour;
     uint8_t minute;
     uint8_t second;
-    voidFuncPtr interruptServiceCallback;
 };
-
-struct ShootingData : public EventData {
-    IntervalometerSettings *settings;
-    IntervalometerStateMachine *stateMachine;
-};
-
 
 class SystemState : public StateMachine {
 public:
-    SystemState() : StateMachine(ST_MAX_STATES) {}
+    SystemState();
 
     void HomeSlider();
     void HomingComplete();
     void StartAlarm(AlarmData*);
-    void BeginShooting(ShootingData*);
+    void AlarmFired();
+    void BeginShooting();
     void ShootingComplete();
+
+    void setStepper(AccelStepper *stepper){ this->stepper = stepper;}
+
+    void run() {
+        if(settings != NULL)
+            stateMachine.run();
+    }
+
+    IntervalometerSettings *getSettings() const {
+        return settings;
+    }
+
+    void setSettings(IntervalometerSettings *settings) {
+        this->settings = settings;
+    }
+
+
 private:
-
-
+    IntervalometerSettings *settings;
+    IntervalometerStateMachine stateMachine;
+    AccelStepper *stepper;
     // state enumeration order must match the order of state
     // method entries in the state map
     enum E_States {
@@ -57,7 +70,8 @@ private:
     STATE_DECLARE(SystemState,  Idle,   NoEventData);
     STATE_DECLARE(SystemState,  WaitForAlarm,   AlarmData);
     EXIT_DECLARE(SystemState, ExitWaitForAlarm);
-    STATE_DECLARE(SystemState,  Shooting,  ShootingData);
+    STATE_DECLARE(SystemState,  Shooting,  NoEventData);
+    GUARD_DECLARE(SystemState, HasShootingData,NoEventData)
 
     // state map to define state function order
     BEGIN_STATE_MAP_EX
@@ -65,7 +79,7 @@ private:
         STATE_MAP_ENTRY_EX(&Homing)
         STATE_MAP_ENTRY_EX(&Idle)
         STATE_MAP_ENTRY_ALL_EX(&WaitForAlarm, 0, 0, &ExitWaitForAlarm)
-        STATE_MAP_ENTRY_EX(&Shooting)
+        STATE_MAP_ENTRY_ALL_EX(&Shooting, &HasShootingData, 0,0)
     END_STATE_MAP_EX
 
 };
