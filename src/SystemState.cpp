@@ -9,23 +9,66 @@
 
 using namespace std;
 
+/*
+        ST_UNHOMED=0,
+        ST_HOMING,
+        ST_IDLE,
+        ST_WAIT_FOR_ALARM,
+        ST_SHOOTING,
+        ST_MAX_STATES
+ */
+
 void SystemState::StartAlarm(AlarmData *data) {
     BEGIN_TRANSITION_MAP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
         TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM)   // ST_IDLE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_WAIT_FOR_ALARM
         TRANSITION_MAP_ENTRY(CANNOT_HAPPEN) // ST_SHOOTING
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_WAIT_TO_FINISH_SHOOTING
     END_TRANSITION_MAP(data)
 }
 
 void SystemState::BeginShooting(ShootingData* data) {
     BEGIN_TRANSITION_MAP
+        TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
         TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_WAIT_FOR_ALARM
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_WAIT_TO_FINISH_SHOOTING
     END_TRANSITION_MAP(data)
 }
+
+
+void SystemState::HomeSlider() {
+    BEGIN_TRANSITION_MAP
+                    TRANSITION_MAP_ENTRY(ST_HOMING)   // ST_UNHOMED
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
+                    TRANSITION_MAP_ENTRY(ST_HOMING)   // ST_IDLE
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_WAIT_FOR_ALARM
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
+    END_TRANSITION_MAP(NULL)
+}
+
+void SystemState::HomingComplete() {
+    BEGIN_TRANSITION_MAP
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
+                    TRANSITION_MAP_ENTRY(ST_IDLE)   // ST_HOMING
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_IDLE
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_WAIT_FOR_ALARM
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN) // ST_SHOOTING
+    END_TRANSITION_MAP(NULL)
+}
+
+void SystemState::ShootingComplete() {
+    BEGIN_TRANSITION_MAP
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_HOMING
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_IDLE
+                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_WAIT_FOR_ALARM
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING
+    END_TRANSITION_MAP(NULL)
+}
+
 
 STATE_DEFINE(SystemState,   Idle,   NoEventData)
 {
@@ -34,12 +77,6 @@ STATE_DEFINE(SystemState,   Idle,   NoEventData)
 
 STATE_DEFINE(SystemState,   Shooting,  ShootingData) {
     data->stateMachine->start(data->settings);
-    InternalEvent(ST_WAIT_TO_FINISH_SHOOTING);
-}
-
-STATE_DEFINE(SystemState, WaitToFinishShooting, ShootingData) {
-    if(data->stateMachine->getCurrentState() == FINISHED)
-        InternalEvent(ST_IDLE);
 }
 
 STATE_DEFINE(SystemState,   WaitForAlarm, AlarmData) {
