@@ -57,7 +57,7 @@ public:
     }
 
     bool isKeyboardActive() {
-        return this->isKeyboardActive;
+        return this->_isKeyboardActive;
     }
 
 private:

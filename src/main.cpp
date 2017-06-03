@@ -47,6 +47,11 @@ void limitSwitch_pressedCallback() {
     homer.LimitSwitchPressed();
 }
 
+void keypadEvent(KeypadEvent key);
+TextLine tl;
+ulong last_display;
+
+
 void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
@@ -62,6 +67,7 @@ void setup()
     setupI2C();
     setupRtc(&Serial);
     setupKeypad();
+    keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
     setupLcd();
 
     limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
@@ -116,6 +122,7 @@ void loop()
     }
 
     taskManager.Loop();
+    keypad.getKey();
 }
 
 void handleMotorRunState() {
@@ -128,4 +135,34 @@ void handleMotorRunState() {
         }
     }
     previousMotorRunState = stepper.isRunning();
+}
+
+
+// Taking care of some special events.
+void keypadEvent(KeypadEvent key){
+    KeyState state = keypad.getState();
+    switch (state){
+        case PRESSED:
+            Serial.println(key);
+            if(systemState.isKeyboardActive()) {
+                if (key == 'D') {
+                    if (tl.text.length() > 0) {
+                        tl.text.remove(tl.text.length() - 1);
+                    }
+                } else if (key == 'A') {
+
+                } else {
+                    tl.text = tl.text + key;
+                }
+                tl.position = tl.text.length() - 1;
+            } else {
+                if(key == 'A') {
+                    systemState.ShowConfiguration();
+                }
+            }
+            tl.lastmod = millis();
+            break;
+        default:
+            break;
+    }
 }
