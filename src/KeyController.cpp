@@ -24,5 +24,5 @@ Keypad_MC17 keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS, KEYPAD_I
 
 
 void setupKeypad() {
-
+    keypad.begin( );
 }

@@ -23,6 +23,10 @@ struct AlarmData : public EventData {
     uint8_t second;
 };
 
+struct TextData : public EventData {
+    String text;
+};
+
 class SystemState : public StateMachine {
 public:
     SystemState();
@@ -34,6 +38,7 @@ public:
     void BeginShooting();
     void ShootingComplete();
     void Back();
+    void SaveData(TextData*);
     void ShowConfiguration();
 
     void setStepper(AccelStepper *stepper){ this->stepper = stepper;}
@@ -51,11 +56,18 @@ public:
         this->settings = settings;
     }
 
+    bool isKeyboardActive() {
+        return this->isKeyboardActive;
+    }
 
 private:
+    void NextStep();
+
     IntervalometerSettings *settings;
     IntervalometerStateMachine stateMachine;
     AccelStepper *stepper;
+
+    bool _isKeyboardActive=false;
     // state enumeration order must match the order of state
     // method entries in the state map
     enum E_States {
@@ -71,6 +83,11 @@ private:
         ST_CONFIG_ALARM,
         ST_CONFIG_ALARM_TIME,
         ST_CONFIG_ALARM_SETPOINT,
+        ST_SAVE_IV_FRAMES,
+        ST_SAVE_IV_SHUTTER_SPEED,
+        ST_SAVE_IV_INTERVAL,
+        ST_SAVE_ALARM_TIME,
+        ST_SAVE_ALARM_SETPOINT,
         ST_MAX_STATES
     };
 
@@ -88,6 +105,13 @@ private:
     STATE_DECLARE(SystemState, ConfigAlarm, NoEventData);
     STATE_DECLARE(SystemState, ConfigAlarmTime, NoEventData);
     STATE_DECLARE(SystemState, ConfigAlarmSetPoint, NoEventData);
+    STATE_DECLARE(SystemState, SaveIvFrames, TextData);
+    STATE_DECLARE(SystemState, SaveIvShutterSpeed, TextData);
+    STATE_DECLARE(SystemState, SaveIvInterval, TextData);
+    STATE_DECLARE(SystemState, SaveAlarmTime, TextData);
+    STATE_DECLARE(SystemState, SaveAlarmSetPoint, TextData);
+    ENTRY_DECLARE(SystemState, ConfigEntry, NoEventData);
+    EXIT_DECLARE(SystemState, ConfigExit);
 
     // state map to define state function order
     BEGIN_STATE_MAP_EX
@@ -97,12 +121,17 @@ private:
         STATE_MAP_ENTRY_ALL_EX(&WaitForAlarm, 0, 0, &ExitWaitForAlarm)
         STATE_MAP_ENTRY_ALL_EX(&Shooting, &HasShootingData, 0,0)
         STATE_MAP_ENTRY_EX(&ConfigIntervalometer)
-        STATE_MAP_ENTRY_EX(&ConfigIvFrames)
-        STATE_MAP_ENTRY_EX(&ConfigIvShutterSpeed)
-        STATE_MAP_ENTRY_EX(&ConfigIvInterval)
-        STATE_MAP_ENTRY_EX(&ConfigAlarm)
-        STATE_MAP_ENTRY_EX(&ConfigAlarmTime)
-        STATE_MAP_ENTRY_EX(&ConfigAlarmSetPoint)
+        STATE_MAP_ENTRY_ALL_EX(&ConfigIvFrames, 0, &ConfigEntry, &ConfigExit)
+        STATE_MAP_ENTRY_ALL_EX(&ConfigIvShutterSpeed, 0, &ConfigEntry, &ConfigExit)
+        STATE_MAP_ENTRY_ALL_EX(&ConfigIvInterval, 0, &ConfigEntry, &ConfigExit)
+        STATE_MAP_ENTRY_ALL_EX(&ConfigAlarm, 0, &ConfigEntry, &ConfigExit)
+        STATE_MAP_ENTRY_ALL_EX(&ConfigAlarmTime, 0, &ConfigEntry, &ConfigExit)
+        STATE_MAP_ENTRY_ALL_EX(&ConfigAlarmSetPoint, 0, &ConfigEntry, &ConfigExit)
+        STATE_MAP_ENTRY_EX(&SaveIvFrames)
+        STATE_MAP_ENTRY_EX(&SaveIvShutterSpeed)
+        STATE_MAP_ENTRY_EX(&SaveIvInterval)
+        STATE_MAP_ENTRY_EX(&SaveAlarmTime)
+        STATE_MAP_ENTRY_EX(&SaveAlarmSetPoint)
     END_STATE_MAP_EX
 
 };

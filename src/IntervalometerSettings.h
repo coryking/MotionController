@@ -11,9 +11,6 @@ public:
     IntervalometerSettings(int totalFrames, long startPosition, long endPosition, long intervalMs, long shutterSpeedMs, long shutterTriggerDurationMs)
             : totalFrames(totalFrames), endPosition(endPosition), startPosition(startPosition), intervalMs(intervalMs),
               shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs) {
-        _totalSteps = endPosition - startPosition;
-        _stepsPerFrame = getTotalSteps() / getTotalFrames();
-
     }
 
     int getTotalFrames() const {
@@ -21,7 +18,7 @@ public:
     }
 
     long getTotalSteps() const {
-        return _totalSteps;
+        return endPosition - startPosition;;
     }
 
     long getStartPosition() const {
@@ -33,11 +30,23 @@ public:
     }
 
     long getStepsPerFrame() {
-        return _stepsPerFrame;
+        return getTotalSteps() / getTotalFrames();;
     }
 
     long getShutterTriggerDurationMs() const {
         return shutterTriggerDurationMs;
+    }
+
+    void setTotalFrames(int totalFrames) {
+        IntervalometerSettings::totalFrames = totalFrames;
+    }
+
+    void setIntervalMs(long intervalMs) {
+        IntervalometerSettings::intervalMs = intervalMs;
+    }
+
+    void setShutterSpeedMs(long shutterSpeedMs) {
+        IntervalometerSettings::shutterSpeedMs = shutterSpeedMs;
     }
 
     /***
@@ -65,9 +74,6 @@ private:
 
     long startPosition;
     long endPosition;
-
-    long _totalSteps;
-    long _stepsPerFrame;
 
     long intervalMs;
     long shutterSpeedMs;

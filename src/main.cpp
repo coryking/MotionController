@@ -4,11 +4,14 @@
 #include <IntervalometerSettings.h>
 #include <IntervalometerStateMachine.h>
 
+#include <Task.h>
+
 #include "Pins.h"
 
 #include "I2C.h"
 #include "rtc.h"
 #include "KeyController.h"
+#include "display.h"
 
 #include "SystemState.h"
 #include "Homer.h"
@@ -31,6 +34,9 @@ AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN); // Defaults to Ac
 
 SystemState systemState;
 Homer homer;
+
+TaskManager taskManager;
+FunctionTask taskPrintDateTime(printDateTimeTask, MsToTaskTime(500));
 
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
 
@@ -56,6 +62,7 @@ void setup()
     setupI2C();
     setupRtc(&Serial);
     setupKeypad();
+    setupLcd();
 
     limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
     limitSwitch.setup(LIMIT_SWITCH, BUTTON_DEBOUNCE_DELAY, InputDebounce::PIM_INT_PULL_UP_RES);
@@ -88,6 +95,9 @@ void setup()
 
     homer.StartHoming();
     systemState.HomeSlider();
+
+    taskManager.StartTask(&taskPrintDateTime);
+
 }
 
 void loop()
@@ -105,6 +115,7 @@ void loop()
         systemState.run();
     }
 
+    taskManager.Loop();
 }
 
 void handleMotorRunState() {
