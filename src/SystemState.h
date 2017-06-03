@@ -46,6 +46,7 @@ public:
     void AlarmFired();
     void BeginShooting();
     void Back();
+    void Run();
     void SaveData(TextData*);
     void ShowConfiguration();
 
@@ -61,11 +62,6 @@ public:
 
     void setKeyboardBufferCb(const SetKeyboardBufferFn &cb) {
         this->_setBufferCb = cb;
-    }
-
-    void run() {
-        //if(settings != NULL)
-        //    stateMachine.run();
     }
 
     IntervalometerSettings *getSettings() const {

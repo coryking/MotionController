@@ -111,7 +111,11 @@ void showHomingUpperBound(long currentPosition) {
 void showHomed() {
     lcd.clear();
 }
-
+void showShootingFinished() {
+    lcd.clear();
+    lcd.setCursor(1,1);
+    lcd.print("Finished Shooting.");
+}
 void showShootingScreen(String action, String action2, long currentFrame, long framesRemaining) {
     lcd.clear();
     lcd.setCursor(0,0);
@@ -119,8 +123,9 @@ void showShootingScreen(String action, String action2, long currentFrame, long f
     lcd.setCursor(0,1);
     lcd.print(action2);
     lcd.setCursor(0,2);
+    lcd.print("Frame");
     lcd.print(currentFrame);
-    lcd.print(" of ");
+    lcd.print("/");
     lcd.print(framesRemaining);
 }
 

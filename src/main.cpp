@@ -124,7 +124,7 @@ void loop()
 
     if(!homer.isEmergencyStopped()) {
         stepper.run();
-        systemState.run();
+        systemState.Run();
     }
 
     if(systemState.isKeyboardActive() &&  tl.lastmod >= last_display) {
@@ -151,6 +151,13 @@ void handleMotorRunState() {
     previousMotorRunState = stepper.isRunning();
 }
 
+void saveKeypadData() {
+    auto str = tl.text;
+    str.trim();
+    auto data = new TextData;
+    data->text = str;
+    systemState.SaveData(data);
+}
 
 // Taking care of some special events.
 void keypadEvent(KeypadEvent key){
@@ -159,25 +166,30 @@ void keypadEvent(KeypadEvent key){
         case PRESSED:
             Serial.println(key);
             if(systemState.isKeyboardActive()) {
-                if (key == 'D') {
-                    if (tl.text.length() > 0) {
-                        tl.text.remove(tl.text.length() - 1);
-                    }
-                } else if (key == 'A') {
-                    auto str = tl.text;
-                    str.trim();
-                    auto data = new TextData;
-                    data->text = str;
-                    systemState.SaveData(data);
-                } else {
-                    tl.text = tl.text + key;
+                switch(key) {
+                    case 'D':
+                        if (tl.text.length() > 0) {
+                            tl.text.remove(tl.text.length() - 1);
+                        }
+                        break;
+                    case 'A':
+                        saveKeypadData();
+                        break;
+                    case 'B':
+                        saveKeypadData();
+                        systemState.BeginShooting();
+                    default:
+                        tl.text = tl.text + key;
+                        break;
                 }
-                tl.position = tl.text.length() - 1;
             } else {
                 if(key == 'A') {
                     systemState.ShowConfiguration();
+                } else if (key == 'B') {
+                    systemState.BeginShooting();
                 }
             }
+            tl.position = tl.text.length() - 1;
             tl.lastmod = millis();
             break;
         default:
