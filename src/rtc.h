@@ -16,4 +16,13 @@ extern RTC_CLOCK globalRtc;
 
 void setupRtc(Print *display);
 
+extern volatile bool didGetAlarm;
+
+void attachAlarmInterupt();
+void detachAlarmInterupt();
+
+void alarm_callback();
+
+bool Alarmed();
+
 #endif //FISHTANKCONTROLLER_RTC_H

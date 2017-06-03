@@ -34,7 +34,7 @@ void SystemState::AlarmFired() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
-                    TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_IDLE
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_IDLE
                     TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_WAIT_FOR_ALARM
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
     END_TRANSITION_MAP(NULL)
@@ -111,6 +111,7 @@ STATE_DEFINE(SystemState,   WaitForAlarm, AlarmData) {
     globalRtc.SetAlarmOne(alarm1);
 
     globalRtc.LatchAlarmsTriggeredFlags();
+    attachAlarmInterupt();
 
 }
 
@@ -119,7 +120,7 @@ GUARD_DEFINE(SystemState, HasShootingData, NoEventData) {
 }
 
 EXIT_DEFINE(SystemState, ExitWaitForAlarm) {
-    detachInterrupt(RTC_INTERUPT_PIN);
+    detachAlarmInterupt();
 }
 
 SystemState::SystemState() : StateMachine(ST_MAX_STATES) {

@@ -14,7 +14,7 @@
 
 #define BUTTON_DEBOUNCE_DELAY   20   // [ms]
 
-#define TOTAL_SHOTS 300
+#define TOTAL_SHOTS 2
 #define INTERVAL 1000
 #define TIME_PER_SHOT 250
 #define TIME_FOR_SHUTTER_TRIGGER 200
@@ -23,7 +23,7 @@
 long sliderDistanceSteps = 0;
 
 // Define a stepper and the pins it will use
-AccelStepper stepper(AccelStepper::DRIVER, STEP, DIR); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 
 //IntervalometerStateMachine *ivStateMachine = NULL;
 //IntervalometerSettings *ivSettings = NULL;
@@ -33,13 +33,8 @@ Homer homer;
 
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
 
-volatile bool didGetAlarm = false;
 bool previousMotorRunState = false;
 void handleMotorRunState();
-
-void alarm_callback() {
-    didGetAlarm = true;
-}
 
 void limitSwitch_pressedCallback() {
     homer.LimitSwitchPressed();
@@ -52,7 +47,7 @@ void setup()
 {
 
     Serial.begin(9600);
-
+    Serial.println("Hello World");
     randomSeed(analogRead(0));
     pinMode(CAMERA_PIN, OUTPUT);
     digitalWrite(CAMERA_PIN, LOW);
@@ -91,10 +86,6 @@ void setup()
 
     homer.StartHoming();
     systemState.HomeSlider();
-    digitalWrite(RTC_INTERUPT_PIN, HIGH);
-    pinMode(RTC_INTERUPT_PIN, INPUT_PULLUP);
-    attachInterrupt(RTC_INTERUPT_PIN, alarm_callback, FALLING);
-
 }
 
 void loop()
@@ -103,9 +94,8 @@ void loop()
     limitSwitch.process(now);
     handleMotorRunState();
 
-    if(didGetAlarm) {
+    if(Alarmed()) {
         systemState.AlarmFired();
-        didGetAlarm = false;
     }
 
     if(!homer.isEmergencyStopped()) {

@@ -5,8 +5,11 @@
 #include "rtc.h"
 #include <RtcDS3231.h>
 #include <TimeLib.h>
+#include "Pins.h"
 
 RTC_CLOCK globalRtc = RTC_CLOCK(Wire);
+
+volatile bool didGetAlarm = false;
 
 time_t syncRtcTime() {
     Serial.println("Sync RTC Time");
@@ -47,4 +50,40 @@ void setupRtc(Print *display) {
 
     setSyncProvider(syncRtcTime);
 
+}
+
+bool Alarmed() {
+    bool wasAlarmed = false;
+    if (didGetAlarm)
+    {
+        wasAlarmed = true;
+        didGetAlarm = false;
+        // this gives us which alarms triggered and
+        // then allows for others to trigger again
+        DS3231AlarmFlag flag = globalRtc.LatchAlarmsTriggeredFlags();
+
+        if (flag & DS3231AlarmFlag_Alarm1)
+        {
+            Serial.println("alarm one triggered");
+        }
+        if (flag & DS3231AlarmFlag_Alarm2)
+        {
+            Serial.println("alarm two triggered");
+        }
+    }
+    return wasAlarmed;
+}
+
+void alarm_callback() {
+    didGetAlarm = true;
+}
+
+void attachAlarmInterupt() {
+    digitalWrite(RTC_INTERUPT_PIN, HIGH);
+    pinMode(RTC_INTERUPT_PIN, INPUT_PULLUP);
+    attachInterrupt(RTC_INTERUPT_PIN, alarm_callback, FALLING);
+}
+
+void detachAlarmInterupt() {
+    detachInterrupt(RTC_INTERUPT_PIN);
 }
