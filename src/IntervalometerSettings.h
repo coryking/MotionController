@@ -15,8 +15,8 @@ public:
               shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs) {
     }
 
-    IntervalometerSettings() : totalFrames(1), endPosition(1), startPosition(0), intervalMs(1),
-                               shutterSpeedMs(1), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER){
+    IntervalometerSettings() : totalFrames(5), endPosition(1), startPosition(0), intervalMs(3000),
+                               shutterSpeedMs(1000), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER){
 
     }
 

@@ -123,12 +123,19 @@ void showShootingScreen(String action, String action2, long currentFrame, long f
     lcd.setCursor(0,1);
     lcd.print(action2);
     lcd.setCursor(0,2);
-    lcd.print("Frame");
-    lcd.print(currentFrame);
+    lcd.print("Frame ");
+    lcd.print(currentFrame + 1);
     lcd.print("/");
     lcd.print(framesRemaining);
 }
 
+void displayTimeRemaining(long currentDuration, long interval) {
+    long remaining = (interval - currentDuration)/1000;
+    lcd.setCursor(0,3);
+    lcd.print(remaining);
+    lcd.print("s remaining");
+
+}
 
 
 const char *spaceString = "                    ";

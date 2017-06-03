@@ -27,6 +27,7 @@ void showHomingLowerBound(long);
 void showHomingUpperBound(long);
 void showHomed();
 
+void displayTimeRemaining(long currentDuration, long interval);
 void showShootingFinished();
 void showShootingScreen(String action, String action2, long currentFrame, long framesRemaining);
 

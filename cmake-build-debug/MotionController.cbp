@@ -275,6 +275,9 @@
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Fault.h">
 			<Option target="MotionController"/>
 		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/FunctionalTask.h">
+			<Option target="MotionController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/Homer.cpp">
 			<Option target="MotionController"/>
 		</Unit>

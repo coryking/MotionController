@@ -170,6 +170,8 @@ void keypadEvent(KeypadEvent key){
                     case 'D':
                         if (tl.text.length() > 0) {
                             tl.text.remove(tl.text.length() - 1);
+                            tl.position = tl.text.length() - 1;
+                            tl.lastmod = millis();
                         }
                         break;
                     case 'A':
@@ -180,17 +182,19 @@ void keypadEvent(KeypadEvent key){
                         systemState.BeginShooting();
                     default:
                         tl.text = tl.text + key;
+                        tl.position = tl.text.length() - 1;
+                        tl.lastmod = millis();
                         break;
                 }
-            } else {
+            } else if (systemState.GetCurrentState() == SystemState::ST_IDLE) {
                 if(key == 'A') {
                     systemState.ShowConfiguration();
                 } else if (key == 'B') {
                     systemState.BeginShooting();
+                } else if (key == 'C') {
+                    systemState.HomeSlider();
                 }
             }
-            tl.position = tl.text.length() - 1;
-            tl.lastmod = millis();
             break;
         default:
             break;

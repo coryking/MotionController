@@ -11,7 +11,6 @@
 
 FunctionTask taskPrintDateTime(printDateTimeTask, MsToTaskTime(500));
 
-
 using namespace std;
 
 /*
@@ -99,12 +98,12 @@ void SystemState::BeginShooting() {
         TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_ALARM
         TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_ALARM_TIME
         TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_ALARM_SETPOINT
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_FRAMES,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_SHUTTER_SPEED,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_IV_FRAMES,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_IV_SHUTTER_SPEED,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_IV_INTERVAL,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_ALARM_TIME,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_ALARM_SETPOINT,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_HOMING_DATA,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
@@ -307,7 +306,7 @@ void SystemState::NextStep() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_SHUTTER_SPEED) // ST_SAVE_IV_FRAMES,
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_INTERVAL) // ST_SAVE_IV_SHUTTER_SPEED,
-                    TRANSITION_MAP_ENTRY(ST_CONFIG_ALARM) // ST_SAVE_IV_INTERVAL,
+                    TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(ST_CONFIG_ALARM_SETPOINT) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
@@ -456,13 +455,14 @@ STATE_DEFINE(SystemState,   Shooting,  NoEventData) {
 
 STATE_DEFINE(SystemState, ShootingPositioning, NoEventData) {
     if(!this->stepper->isRunning()) {
-        InternalEvent(ST_SHOOTING_SHUTTER);
+        InternalEvent(ST_SHOOTING_FRAME);
     }
 }
 
 STATE_DEFINE(SystemState, ShootingFrame, NoEventData) {
     this->showShootingDisplay("Taking Picture");
     this->startMs = millis();
+    //taskManager.StartTask(this->_showRemainingTime);
     Serial.println("Setting camera pin high!");
     digitalWrite(CAMERA_PIN, HIGH);
     InternalEvent(ST_SHOOTING_SHUTTER);
@@ -511,8 +511,10 @@ STATE_DEFINE(SystemState, ShootingPaused, NoEventData) {
         Serial.print(" actual duration was ");
         Serial.println(currentDuration);
         this->currentFrame++;
+        taskManager.StopTask(_showRemainingTime);
         if(this->currentFrame >= this->settings->getTotalFrames()) {
             showShootingFinished();
+
             InternalEvent(ST_IDLE);
         } else {
             InternalEvent(ST_SHOOTING_FRAME);
@@ -520,8 +522,13 @@ STATE_DEFINE(SystemState, ShootingPaused, NoEventData) {
     }
 }
 
+void SystemState::showTimeRemaining(uint32_t delta) {
+    unsigned long currentDuration = millis() - this->startMs;
+    displayTimeRemaining(currentDuration, this->settings->getIntervalMs());
+}
 
 SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
     settings = new IntervalometerSettings();
+    //_showRemainingTime = new ShutterTimeRemaining(this, MsToTaskTime(250));
 }
 

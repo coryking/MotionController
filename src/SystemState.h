@@ -9,6 +9,8 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <functional>
+#include <Task.h>
+#include "FunctionalTask.h"
 #include "KeyController.h"
 
 #include "StateMachine.h"
@@ -71,6 +73,38 @@ public:
     bool isKeyboardActive() {
         return this->_isKeyboardActive;
     }
+    void showTimeRemaining(uint32_t delta);
+
+
+    // state enumeration order must match the order of state
+    // method entries in the state map
+    enum E_States {
+        ST_UNHOMED=0,
+        ST_HOMING,
+        ST_IDLE,
+        ST_WAIT_FOR_ALARM,
+        ST_SHOOTING,
+        ST_CONFIG_INTERVALOMETER,
+        ST_CONFIG_IV_FRAMES,
+        ST_CONFIG_IV_SHUTTER_SPEED,
+        ST_CONFIG_IV_INTERVAL,
+        ST_CONFIG_ALARM,
+        ST_CONFIG_ALARM_TIME,
+        ST_CONFIG_ALARM_SETPOINT,
+        ST_SAVE_IV_FRAMES,
+        ST_SAVE_IV_SHUTTER_SPEED,
+        ST_SAVE_IV_INTERVAL,
+        ST_SAVE_ALARM_TIME,
+        ST_SAVE_ALARM_SETPOINT,
+        ST_SAVE_HOMING_DATA,
+        ST_SHOOTING_FRAME,
+        ST_SHOOTING_POSITIONING,
+        ST_SHOOTING_SHUTTER,
+        ST_SHOOTING_SHUTTER_WAIT,
+        ST_SHOOTING_SHUTTLE,
+        ST_SHOOTING_PAUSED,
+        ST_MAX_STATES
+    };
 
 private:
     void NextStep();
@@ -80,6 +114,8 @@ private:
     KeyboardActiveFn _activeCb;
     KeyboardActiveFn _inactiveCb;
     SetKeyboardBufferFn _setBufferCb;
+
+    Task* _showRemainingTime;
 
     // when the shutter started
     unsigned long startMs;
@@ -115,35 +151,6 @@ private:
         showShootingScreen(action, action2, currentFrame, this->settings->getTotalFrames());
     }
     bool _isKeyboardActive=false;
-    // state enumeration order must match the order of state
-    // method entries in the state map
-    enum E_States {
-        ST_UNHOMED=0,
-        ST_HOMING,
-        ST_IDLE,
-        ST_WAIT_FOR_ALARM,
-        ST_SHOOTING,
-        ST_CONFIG_INTERVALOMETER,
-        ST_CONFIG_IV_FRAMES,
-        ST_CONFIG_IV_SHUTTER_SPEED,
-        ST_CONFIG_IV_INTERVAL,
-        ST_CONFIG_ALARM,
-        ST_CONFIG_ALARM_TIME,
-        ST_CONFIG_ALARM_SETPOINT,
-        ST_SAVE_IV_FRAMES,
-        ST_SAVE_IV_SHUTTER_SPEED,
-        ST_SAVE_IV_INTERVAL,
-        ST_SAVE_ALARM_TIME,
-        ST_SAVE_ALARM_SETPOINT,
-        ST_SAVE_HOMING_DATA,
-        ST_SHOOTING_FRAME,
-        ST_SHOOTING_POSITIONING,
-        ST_SHOOTING_SHUTTER,
-        ST_SHOOTING_SHUTTER_WAIT,
-        ST_SHOOTING_SHUTTLE,
-        ST_SHOOTING_PAUSED,
-        ST_MAX_STATES
-    };
 
     STATE_DECLARE(SystemState, Unhomed, NoEventData);
     STATE_DECLARE(SystemState, Homing, NoEventData);
@@ -205,6 +212,17 @@ private:
         STATE_MAP_ENTRY_EX(&ShootingPaused)
     END_STATE_MAP_EX
 
+};
+
+
+class ShutterTimeRemaining : public Task {
+public:
+    ShutterTimeRemaining(SystemState* systemState, uint32_t timeInterval) :Task(timeInterval), _systemState(systemState) {}
+private:
+    SystemState* _systemState;
+    virtual void OnUpdate(uint32_t deltaTime) {
+        _systemState->showTimeRemaining(deltaTime);
+    }
 };
 
 #endif //MOTIONCONTROLLER_SYSTEMSTATE_H
