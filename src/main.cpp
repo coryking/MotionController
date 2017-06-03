@@ -55,6 +55,7 @@ void setup()
 
     setupI2C();
     setupRtc(&Serial);
+    setupKeypad();
 
     limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
     limitSwitch.setup(LIMIT_SWITCH, BUTTON_DEBOUNCE_DELAY, InputDebounce::PIM_INT_PULL_UP_RES);

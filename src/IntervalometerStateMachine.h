@@ -11,7 +11,7 @@
 #include "IntervalometerSettings.h"
 
 enum IntervalometerStates {
-    IDLE,
+    IS_IDLE,
     START,
     POSITIONING,
     SHUTTER,
@@ -28,7 +28,7 @@ public:
     typedef std::function<void()> InvokeShutterCallbackFn;
 
     IntervalometerStateMachine() {
-        setCurrentState(IDLE);
+        setCurrentState(IS_IDLE);
 
     }
 
@@ -113,7 +113,7 @@ public:
                     }
                 }
                 break;
-            case IDLE:
+            case IS_IDLE:
             case FINISHED:
             default:
                 break;

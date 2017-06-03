@@ -33,6 +33,8 @@ public:
     void AlarmFired();
     void BeginShooting();
     void ShootingComplete();
+    void Back();
+    void ShowConfiguration();
 
     void setStepper(AccelStepper *stepper){ this->stepper = stepper;}
 
@@ -62,6 +64,13 @@ private:
         ST_IDLE,
         ST_WAIT_FOR_ALARM,
         ST_SHOOTING,
+        ST_CONFIG_INTERVALOMETER,
+        ST_CONFIG_IV_FRAMES,
+        ST_CONFIG_IV_SHUTTER_SPEED,
+        ST_CONFIG_IV_INTERVAL,
+        ST_CONFIG_ALARM,
+        ST_CONFIG_ALARM_TIME,
+        ST_CONFIG_ALARM_SETPOINT,
         ST_MAX_STATES
     };
 
@@ -71,7 +80,14 @@ private:
     STATE_DECLARE(SystemState,  WaitForAlarm,   AlarmData);
     EXIT_DECLARE(SystemState, ExitWaitForAlarm);
     STATE_DECLARE(SystemState,  Shooting,  NoEventData);
-    GUARD_DECLARE(SystemState, HasShootingData,NoEventData)
+    GUARD_DECLARE(SystemState, HasShootingData,NoEventData);
+    STATE_DECLARE(SystemState, ConfigIntervalometer, NoEventData);
+    STATE_DECLARE(SystemState, ConfigIvFrames, NoEventData);
+    STATE_DECLARE(SystemState, ConfigIvShutterSpeed, NoEventData);
+    STATE_DECLARE(SystemState, ConfigIvInterval, NoEventData);
+    STATE_DECLARE(SystemState, ConfigAlarm, NoEventData);
+    STATE_DECLARE(SystemState, ConfigAlarmTime, NoEventData);
+    STATE_DECLARE(SystemState, ConfigAlarmSetPoint, NoEventData);
 
     // state map to define state function order
     BEGIN_STATE_MAP_EX
@@ -80,6 +96,13 @@ private:
         STATE_MAP_ENTRY_EX(&Idle)
         STATE_MAP_ENTRY_ALL_EX(&WaitForAlarm, 0, 0, &ExitWaitForAlarm)
         STATE_MAP_ENTRY_ALL_EX(&Shooting, &HasShootingData, 0,0)
+        STATE_MAP_ENTRY_EX(&ConfigIntervalometer)
+        STATE_MAP_ENTRY_EX(&ConfigIvFrames)
+        STATE_MAP_ENTRY_EX(&ConfigIvShutterSpeed)
+        STATE_MAP_ENTRY_EX(&ConfigIvInterval)
+        STATE_MAP_ENTRY_EX(&ConfigAlarm)
+        STATE_MAP_ENTRY_EX(&ConfigAlarmTime)
+        STATE_MAP_ENTRY_EX(&ConfigAlarmSetPoint)
     END_STATE_MAP_EX
 
 };
