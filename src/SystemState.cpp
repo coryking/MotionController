@@ -79,10 +79,10 @@ void SystemState::BeginShooting() {
         TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_SHOOTING)   // ST_WAIT_FOR_ALARM
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_INTERVALOMETER
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_FRAMES
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_SHUTTER_SPEED
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_INTERVAL
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_CONFIG_INTERVALOMETER
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_CONFIG_IV_FRAMES
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_CONFIG_IV_SHUTTER_SPEED
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_CONFIG_IV_INTERVAL
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_TIME
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_SETPOINT
@@ -316,15 +316,19 @@ STATE_DEFINE(SystemState, ConfigIntervalometer, NoEventData) {
 
 STATE_DEFINE(SystemState, ConfigIvFrames, NoEventData) {
     showConfigIvFrames();
+    callBufferCb(String(this->settings->getTotalFrames()));
 
 }
 
 STATE_DEFINE(SystemState, ConfigIvShutterSpeed, NoEventData) {
     showConfigIvShutterSpeed();
+    callBufferCb(String(this->settings->getShutterSpeedMs() / 1000));
+
 }
 
 STATE_DEFINE(SystemState, ConfigIvInterval, NoEventData) {
     showConfigIvInterval();
+    callBufferCb(String(this->settings->getIntervalMs() / 1000));
 }
 
 STATE_DEFINE(SystemState, ConfigAlarm, NoEventData) {
@@ -340,17 +344,26 @@ STATE_DEFINE(SystemState, ConfigAlarmSetPoint, NoEventData) {
 }
 
 STATE_DEFINE(SystemState, SaveIvFrames, TextData) {
-    this->settings->setTotalFrames(data->text.toInt());
+    long frames = data->text.toInt();
+    Serial.print("Frames: ");
+    Serial.println(frames);
+    this->settings->setTotalFrames(frames);
     this->NextStep();
 }
 
 STATE_DEFINE(SystemState, SaveIvShutterSpeed, TextData) {
-    this->settings->setShutterSpeedMs(data->text.toInt() * 1000);
+    auto ss = data->text.toInt() * 1000;
+    Serial.print("Shutter Speed: ");
+    Serial.println(ss);
+    this->settings->setShutterSpeedMs(ss);
     this->NextStep();
 }
 
 STATE_DEFINE(SystemState, SaveIvInterval, TextData) {
-    this->settings->setIntervalMs(data->text.toInt() * 1000);
+    long intervalMs = data->text.toInt() * 1000;
+    Serial.print("Interval: ");
+    Serial.println(intervalMs);
+    this->settings->setIntervalMs(intervalMs);
     this->NextStep();
 }
 
@@ -364,11 +377,12 @@ STATE_DEFINE(SystemState, SaveAlarmSetPoint, TextData) {
 
 ENTRY_DEFINE(SystemState, ConfigEntry, NoEventData) {
     this->_isKeyboardActive = true;
+    this->invokeKeyboardActive();
 }
-
 
 EXIT_DEFINE(SystemState, ConfigExit) {
     this->_isKeyboardActive = false;
+    this->invokeKeyboardInactive();
 }
 
 ENTRY_DEFINE(SystemState, EnterIdle, NoEventData) {

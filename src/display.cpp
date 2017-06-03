@@ -36,7 +36,6 @@ void printDateTimeTask(uint32_t deltaTime)
 
 void moveToInputArea() {
     lcd.setCursor(0,1);
-    lcd.blink();
 }
 
 void showConfigIvFrames() {
@@ -56,21 +55,25 @@ void showConfigIvShutterSpeed() {
 void showConfigIvInterval() {
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Shutter Speed (sec):");
+    lcd.print("Interval (sec):");
     moveToInputArea();
 }
 
 void showConfigAlarmTime() {
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Shutter Speed (sec):");
+    lcd.print("Clock:");
+    lcd.setCursor(3,0);
+    lcd.print("(yyyymmddhhmmss)");
     moveToInputArea();
 }
 
 void showConfigAlarmSetPoint() {
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Shutter Speed (sec):");
+    lcd.print("Start Time:");
+    lcd.setCursor(3,0);
+    lcd.print("(yyyymmddhhmmss)");
     moveToInputArea();
 }
 
@@ -107,4 +110,25 @@ void showHomingUpperBound(long currentPosition) {
 
 void showHomed() {
     lcd.clear();
+}
+
+void showShootingScreen(String action, long currentFrame, long framesRemaining) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(action);
+    lcd.setCursor(0,2);
+    lcd.print(currentFrame);
+    lcd.print(" of ")
+    lcd.print(framesRemaining);
+}
+
+const char *spaceString = "                    ";
+String fillString(String str, uint8_t fillTo) {
+    if(str.length() >= fillTo)
+        return str;
+
+    int toFill = fillTo - str.length();
+
+    str += spaceString[20 - toFill];
+    return str;
 }

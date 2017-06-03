@@ -8,6 +8,8 @@
 
 #include <Arduino.h>
 #include <AccelStepper.h>
+#include <functional>
+#include "KeyController.h"
 
 #include "StateMachine.h"
 #include "IntervalometerSettings.h"
@@ -33,6 +35,8 @@ struct HomingData : public EventData {
 
 class SystemState : public StateMachine {
 public:
+    typedef std::function<void()> KeyboardActiveFn;
+    typedef std::function<void(TextLine)> SetKeyboardBufferFn;
     SystemState();
 
     void HomeSlider();
@@ -46,6 +50,18 @@ public:
     void ShowConfiguration();
 
     void setStepper(AccelStepper *stepper){ this->stepper = stepper;}
+
+    void setKeyboardActiveCb(const KeyboardActiveFn &cb) {
+        this->_activeCb = cb;
+    }
+
+    void setKeyboardInctiveCb(const KeyboardActiveFn &cb) {
+        this->_inactiveCb = cb;
+    }
+
+    void setKeyboardBufferCb(const SetKeyboardBufferFn &cb) {
+        this->_setBufferCb = cb;
+    }
 
     void run() {
         //if(settings != NULL)
@@ -66,6 +82,31 @@ private:
     IntervalometerSettings *settings;
     IntervalometerStateMachine stateMachine;
     AccelStepper *stepper;
+    KeyboardActiveFn _activeCb;
+    KeyboardActiveFn _inactiveCb;
+    SetKeyboardBufferFn _setBufferCb;
+
+    void invokeKeyboardActive() {
+        if(this->_activeCb)
+            this->_activeCb();
+    }
+    void invokeKeyboardInactive() {
+        if(this->_inactiveCb)
+            this->_inactiveCb();
+    }
+
+    void callBufferCb(String data) {
+        if(this->_setBufferCb)
+        {
+            data.trim();
+            TextLine tl;
+            tl.text = data;
+            tl.position = data.length();
+            tl.lastmod = millis();
+            this->_setBufferCb(tl);
+
+        }
+    }
 
     bool _isKeyboardActive=false;
     // state enumeration order must match the order of state

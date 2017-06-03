@@ -78,6 +78,18 @@ void setup()
     stepper.setAcceleration(4000);
 
     systemState.setStepper(&stepper);
+    systemState.setKeyboardActiveCb([](){
+        tl.text = "";
+        tl.position=0;
+        tl.lastmod=millis();
+        lcd.blink();
+    });
+    systemState.setKeyboardInctiveCb([](){
+        lcd.noBlink();
+    });
+    systemState.setKeyboardBufferCb([](TextLine textLine) {
+        tl = textLine;
+    });
     homer.setStepper(&stepper);
     homer.setSliderHomedCb([](ulong sliderDistance) {
         auto hd = new HomingData();
@@ -115,6 +127,14 @@ void loop()
         systemState.run();
     }
 
+    if(systemState.isKeyboardActive() &&  tl.lastmod >= last_display) {
+        lcd.setCursor(0,1);
+        String txt = fillString(tl.text, 20);
+        lcd.print(txt);
+        lcd.setCursor(tl.position+1, 1);
+        last_display = millis();
+    }
+
     taskManager.Loop();
     keypad.getKey();
 }
@@ -144,7 +164,11 @@ void keypadEvent(KeypadEvent key){
                         tl.text.remove(tl.text.length() - 1);
                     }
                 } else if (key == 'A') {
-
+                    auto str = tl.text;
+                    str.trim();
+                    auto data = new TextData;
+                    data->text = str;
+                    systemState.SaveData(data);
                 } else {
                     tl.text = tl.text + key;
                 }
