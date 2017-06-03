@@ -112,15 +112,19 @@ void showHomed() {
     lcd.clear();
 }
 
-void showShootingScreen(String action, long currentFrame, long framesRemaining) {
+void showShootingScreen(String action, String action2, long currentFrame, long framesRemaining) {
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(action);
+    lcd.setCursor(0,1);
+    lcd.print(action2);
     lcd.setCursor(0,2);
     lcd.print(currentFrame);
-    lcd.print(" of ")
+    lcd.print(" of ");
     lcd.print(framesRemaining);
 }
+
+
 
 const char *spaceString = "                    ";
 String fillString(String str, uint8_t fillTo) {

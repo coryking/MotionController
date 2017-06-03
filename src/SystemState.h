@@ -14,6 +14,7 @@
 #include "StateMachine.h"
 #include "IntervalometerSettings.h"
 #include "IntervalometerStateMachine.h"
+#include "display.h"
 
 
 typedef void (*voidFuncPtr)(void);
@@ -44,7 +45,6 @@ public:
     void StartAlarm(AlarmData*);
     void AlarmFired();
     void BeginShooting();
-    void ShootingComplete();
     void Back();
     void SaveData(TextData*);
     void ShowConfiguration();
@@ -80,11 +80,15 @@ private:
     void NextStep();
 
     IntervalometerSettings *settings;
-    IntervalometerStateMachine stateMachine;
     AccelStepper *stepper;
     KeyboardActiveFn _activeCb;
     KeyboardActiveFn _inactiveCb;
     SetKeyboardBufferFn _setBufferCb;
+
+    // when the shutter started
+    unsigned long startMs;
+
+    unsigned int currentFrame;
 
     void invokeKeyboardActive() {
         if(this->_activeCb)
@@ -108,6 +112,12 @@ private:
         }
     }
 
+    void showShootingDisplay(String action) {
+        this->showShootingDisplay(action, "");
+    }
+    void showShootingDisplay(String action, String action2) {
+        showShootingScreen(action, action2, currentFrame, this->settings->getTotalFrames());
+    }
     bool _isKeyboardActive=false;
     // state enumeration order must match the order of state
     // method entries in the state map
@@ -130,6 +140,12 @@ private:
         ST_SAVE_ALARM_TIME,
         ST_SAVE_ALARM_SETPOINT,
         ST_SAVE_HOMING_DATA,
+        ST_SHOOTING_FRAME,
+        ST_SHOOTING_POSITIONING,
+        ST_SHOOTING_SHUTTER,
+        ST_SHOOTING_SHUTTER_WAIT,
+        ST_SHOOTING_SHUTTLE,
+        ST_SHOOTING_PAUSED,
         ST_MAX_STATES
     };
 
@@ -157,6 +173,13 @@ private:
     EXIT_DECLARE(SystemState, ConfigExit);
     ENTRY_DECLARE(SystemState, EnterIdle, NoEventData);
     EXIT_DECLARE(SystemState, ExitIdle);
+    STATE_DECLARE(SystemState, ShootingFrame, NoEventData);
+    STATE_DECLARE(SystemState, ShootingPositioning, NoEventData);
+    STATE_DECLARE(SystemState, ShootingShutter, NoEventData);
+    STATE_DECLARE(SystemState, ShootingShutterWait, NoEventData);
+    STATE_DECLARE(SystemState, ShootingShuttle, NoEventData);
+    STATE_DECLARE(SystemState, ShootingPaused, NoEventData);
+    GUARD_DECLARE(SystemState, IsNotMoving, NoEventData);
 
     // state map to define state function order
     BEGIN_STATE_MAP_EX
@@ -178,6 +201,12 @@ private:
         STATE_MAP_ENTRY_EX(&SaveAlarmTime)
         STATE_MAP_ENTRY_EX(&SaveAlarmSetPoint)
         STATE_MAP_ENTRY_EX(&SaveHomingData)
+        STATE_MAP_ENTRY_EX(&ShootingFrame)
+        STATE_MAP_ENTRY_EX(&ShootingPositioning)
+        STATE_MAP_ENTRY_ALL_EX(&ShootingShutter, &IsNotMoving, 0,0)
+        STATE_MAP_ENTRY_EX(&ShootingShutterWait)
+        STATE_MAP_ENTRY_EX(&ShootingShuttle)
+        STATE_MAP_ENTRY_EX(&ShootingPaused)
     END_STATE_MAP_EX
 
 };

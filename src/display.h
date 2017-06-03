@@ -27,8 +27,7 @@ void showHomingLowerBound(long);
 void showHomingUpperBound(long);
 void showHomed();
 
-void showShootingScreen(String action, long currentFrame, long framesRemaining);
-
+void showShootingScreen(String action, String action2, long currentFrame, long framesRemaining)
 
 String fillString(String str, uint8_t fillTo);
 

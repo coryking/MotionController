@@ -44,6 +44,12 @@ void SystemState::StartAlarm(AlarmData *data) {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
         TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_SAVE_ALARM_SETPOINT,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
     END_TRANSITION_MAP(data)
 }
 
@@ -68,6 +74,13 @@ void SystemState::AlarmFired() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+
     END_TRANSITION_MAP(NULL)
 }
 
@@ -92,6 +105,13 @@ void SystemState::BeginShooting() {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+
     END_TRANSITION_MAP(NULL)
 }
 
@@ -116,6 +136,13 @@ void SystemState::HomeSlider() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+
     END_TRANSITION_MAP(NULL)
 }
 
@@ -139,31 +166,14 @@ void SystemState::HomingComplete(HomingData* data) {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+
     END_TRANSITION_MAP(data)
-}
-
-void SystemState::ShootingComplete() {
-    BEGIN_TRANSITION_MAP
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_HOMING
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_IDLE
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_WAIT_FOR_ALARM
-                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_INTERVALOMETER
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_FRAMES
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_SHUTTER_SPEED
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_INTERVAL
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_TIME
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_SETPOINT
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_FRAMES,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_SHUTTER_SPEED,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
-
-    END_TRANSITION_MAP(NULL)
 }
 
 void SystemState::Back() {
@@ -186,7 +196,12 @@ void SystemState::Back() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -211,7 +226,12 @@ void SystemState::SaveData(TextData* data) {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
     END_TRANSITION_MAP(data)
 }
 
@@ -235,7 +255,12 @@ void SystemState::ShowConfiguration() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -259,7 +284,12 @@ void SystemState::NextStep() {
                     TRANSITION_MAP_ENTRY(ST_CONFIG_ALARM_SETPOINT) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -280,10 +310,6 @@ STATE_DEFINE(SystemState,   Idle,   NoEventData)
 {
     Serial.println("Going idle.... whew....");
     // Noop
-}
-
-STATE_DEFINE(SystemState,   Shooting,  NoEventData) {
-    this->stateMachine.start(this->settings);
 }
 
 STATE_DEFINE(SystemState,   WaitForAlarm, AlarmData) {
@@ -393,29 +419,81 @@ EXIT_DEFINE(SystemState,ExitIdle) {
     taskManager.StopTask(&taskPrintDateTime);
 }
 
-SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
-    stateMachine.setCloseShutterCb([](){
+STATE_DEFINE(SystemState,   Shooting,  NoEventData) {
+    this->currentFrame = 0;
+    this->showShootingDisplay("Starting Timelapse.");
+    this->stepper->moveTo(this->settings->getStartPosition());
+
+    InternalEvent(ST_SHOOTING_POSITIONING);
+}
+
+STATE_DEFINE(SystemState, ShootingPositioning, NoEventData) {
+    if(!this->stepper->isRunning()) {
+        InternalEvent(ST_SHOOTING_SHUTTER);
+    }
+}
+
+STATE_DEFINE(SystemState, ShootingFrame, NoEventData) {
+    this->showShootingDisplay("Taking Picture");
+    this->startMs = millis();
+    Serial.println("Setting camera pin high!");
+    digitalWrite(CAMERA_PIN, HIGH);
+    InternalEvent(ST_SHOOTING_SHUTTER);
+}
+
+
+// Do not fucking go into some state when the god damn thing is moving....
+GUARD_DEFINE(SystemState, IsNotMoving, NoEventData) {
+    return !this->stepper->isRunning();
+}
+
+STATE_DEFINE(SystemState, ShootingShutter, NoEventData) {
+    unsigned long currentDuration = millis() - startMs;
+    if(currentDuration >= this->settings->getShutterTriggerDurationMs()) {
         Serial.println("Setting camera pin low!");
         digitalWrite(CAMERA_PIN, LOW);
-    });
+        InternalEvent(ST_SHOOTING_SHUTTER_WAIT);
+        this->showShootingDisplay("Waiting for shutter.");
 
-    stateMachine.setOpenShutterCb([](){
-        Serial.println("Setting camera pin high!");
-        digitalWrite(CAMERA_PIN, HIGH);
-    });
+    }
+}
 
-    stateMachine.setMoveStepperToRelativeCallback([this](long moveTo){
-        stepper->move(moveTo);
-    });
+STATE_DEFINE(SystemState, ShootingShutterWait, NoEventData) {
+    unsigned long currentDuration = millis() - startMs;
+    if(currentDuration >= this->settings->getShutterSpeedMs()) {
+        this->showShootingDisplay("Moving to next", "position...");
+        this->stepper->move(this->settings->getRelativeStepsPerFrame());
+        InternalEvent(ST_SHOOTING_SHUTTLE);
+    }
 
-    stateMachine.setMoveStepperToAbsolutePositionCb([this](long moveTo){
-        stepper->moveTo(moveTo);
-    });
+}
 
-    stateMachine.setStepperRunningCallback([this]() {
-        return stepper->isRunning();
-    });
+STATE_DEFINE(SystemState, ShootingShuttle, NoEventData) {
+    if(!this->stepper->isRunning()) {
+        this->showShootingDisplay("Waiting for end", "of interval...");
+        InternalEvent(ST_SHOOTING_PAUSED);
+    }
+}
 
+STATE_DEFINE(SystemState, ShootingPaused, NoEventData) {
+    unsigned long currentDuration = millis() - startMs;
+
+    if(currentDuration >= this->settings->getIntervalMs()) {
+        Serial.print("Moving out of paused... Requested duration was ");
+        Serial.print(this->settings->getIntervalMs());
+        Serial.print(" actual duration was ");
+        Serial.println(currentDuration);
+        this->currentFrame++;
+        if(this->currentFrame >= this->settings->getTotalFrames()) {
+            InternalEvent(ST_IDLE);
+        } else {
+            InternalEvent(ST_SHOOTING_FRAME);
+        }
+    }
+}
+
+
+SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
     settings = new IntervalometerSettings();
 }
 
