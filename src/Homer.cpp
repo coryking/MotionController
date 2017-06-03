@@ -3,6 +3,8 @@
 //
 
 #include "Homer.h"
+#include "display.h"
+#include "tasker.h"
 
 void Homer::StartHoming() {
     BEGIN_TRANSITION_MAP
@@ -47,17 +49,20 @@ STATE_DEFINE(Homer, Unhomed, NoEventData) {
 
 STATE_DEFINE(Homer, FindingUpper, NoEventData) {
     Serial.println("Uncalibrated.  Gonna calibrate this shit....");
+    showHomingScreen();
     this->stepper->moveTo(INFINITE_MOTION);
     this->invokeStartedHomingCb();
 }
 
 STATE_DEFINE(Homer, FindingLower, NoEventData) {
+    showHomingUpperBound(stepper->currentPosition());
     Serial.print("Found upper bound!!!  Position is: ");
     Serial.print(stepper->currentPosition());
     Serial.println(".  Stopping...");
     stepper->setCurrentPosition(0);
     stepper->moveTo(-INFINITE_MOTION);
     Serial.println("Now looking for lower bound");
+
 }
 
 STATE_DEFINE(Homer, MovingToZero, NoEventData) {
@@ -72,9 +77,11 @@ STATE_DEFINE(Homer, MovingToZero, NoEventData) {
     stepper->setCurrentPosition(-BUFFER_STEPS);
     Serial.println("Moving to zero point...");
     stepper->moveTo(0);
+    showHomingLowerBound(_sliderDistance);
 }
 
 STATE_DEFINE(Homer, Homed, NoEventData) {
+    showHomed();
     this->invokeSliderHomedCb(_sliderDistance);
 }
 

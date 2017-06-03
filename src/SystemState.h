@@ -27,12 +27,16 @@ struct TextData : public EventData {
     String text;
 };
 
+struct HomingData : public EventData {
+    long sliderSteps;
+};
+
 class SystemState : public StateMachine {
 public:
     SystemState();
 
     void HomeSlider();
-    void HomingComplete();
+    void HomingComplete(HomingData*);
     void StartAlarm(AlarmData*);
     void AlarmFired();
     void BeginShooting();
@@ -44,16 +48,12 @@ public:
     void setStepper(AccelStepper *stepper){ this->stepper = stepper;}
 
     void run() {
-        if(settings != NULL)
-            stateMachine.run();
+        //if(settings != NULL)
+        //    stateMachine.run();
     }
 
     IntervalometerSettings *getSettings() const {
         return settings;
-    }
-
-    void setSettings(IntervalometerSettings *settings) {
-        this->settings = settings;
     }
 
     bool isKeyboardActive() {
@@ -88,6 +88,7 @@ private:
         ST_SAVE_IV_INTERVAL,
         ST_SAVE_ALARM_TIME,
         ST_SAVE_ALARM_SETPOINT,
+        ST_SAVE_HOMING_DATA,
         ST_MAX_STATES
     };
 
@@ -110,14 +111,17 @@ private:
     STATE_DECLARE(SystemState, SaveIvInterval, TextData);
     STATE_DECLARE(SystemState, SaveAlarmTime, TextData);
     STATE_DECLARE(SystemState, SaveAlarmSetPoint, TextData);
+    STATE_DECLARE(SystemState, SaveHomingData, HomingData);
     ENTRY_DECLARE(SystemState, ConfigEntry, NoEventData);
     EXIT_DECLARE(SystemState, ConfigExit);
+    ENTRY_DECLARE(SystemState, EnterIdle, NoEventData);
+    EXIT_DECLARE(SystemState, ExitIdle);
 
     // state map to define state function order
     BEGIN_STATE_MAP_EX
         STATE_MAP_ENTRY_EX(&Unhomed)
         STATE_MAP_ENTRY_EX(&Homing)
-        STATE_MAP_ENTRY_EX(&Idle)
+        STATE_MAP_ENTRY_ALL_EX(&Idle, 0, &EnterIdle, &ExitIdle)
         STATE_MAP_ENTRY_ALL_EX(&WaitForAlarm, 0, 0, &ExitWaitForAlarm)
         STATE_MAP_ENTRY_ALL_EX(&Shooting, &HasShootingData, 0,0)
         STATE_MAP_ENTRY_EX(&ConfigIntervalometer)
@@ -132,6 +136,7 @@ private:
         STATE_MAP_ENTRY_EX(&SaveIvInterval)
         STATE_MAP_ENTRY_EX(&SaveAlarmTime)
         STATE_MAP_ENTRY_EX(&SaveAlarmSetPoint)
+        STATE_MAP_ENTRY_EX(&SaveHomingData)
     END_STATE_MAP_EX
 
 };

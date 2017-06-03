@@ -5,6 +5,7 @@
 #include <IntervalometerStateMachine.h>
 
 #include <Task.h>
+#include "tasker.h"
 
 #include "Pins.h"
 
@@ -34,9 +35,6 @@ AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN); // Defaults to Ac
 
 SystemState systemState;
 Homer homer;
-
-TaskManager taskManager;
-FunctionTask taskPrintDateTime(printDateTimeTask, MsToTaskTime(500));
 
 static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
 
@@ -82,12 +80,11 @@ void setup()
     systemState.setStepper(&stepper);
     homer.setStepper(&stepper);
     homer.setSliderHomedCb([](ulong sliderDistance) {
-        systemState.HomingComplete();
-        sliderDistanceSteps = sliderDistance;
+        auto hd = new HomingData();
+        hd->sliderSteps = sliderDistance;
+        systemState.HomingComplete(hd);
+/*        sliderDistanceSteps = sliderDistance;
         Serial.println("Slider Has been homed according to our callback!");
-
-        IntervalometerSettings *ivSettings = new IntervalometerSettings(TOTAL_SHOTS, 0, sliderDistanceSteps, INTERVAL, TIME_PER_SHOT,TIME_FOR_SHUTTER_TRIGGER);
-        systemState.setSettings(ivSettings);
 
         auto alarmData = new AlarmData();
         auto rtcDate = globalRtc.GetDateTime();
@@ -96,14 +93,11 @@ void setup()
         alarmData->hour=rtcDate.Hour();
         alarmData->minute=rtcDate.Minute();
         alarmData->second=rtcDate.Second() % 30;
-        systemState.StartAlarm(alarmData);
+        systemState.StartAlarm(alarmData); */
     });
 
     homer.StartHoming();
     systemState.HomeSlider();
-
-    taskManager.StartTask(&taskPrintDateTime);
-
 }
 
 void loop()

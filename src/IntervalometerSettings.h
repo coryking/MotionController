@@ -5,12 +5,18 @@
 #ifndef MOTIONCONTROLLER_INTERVALOMETER_H
 #define MOTIONCONTROLLER_INTERVALOMETER_H
 
+#define TIME_FOR_SHUTTER_TRIGGER 200
+
 
 class IntervalometerSettings {
 public:
     IntervalometerSettings(int totalFrames, long startPosition, long endPosition, long intervalMs, long shutterSpeedMs, long shutterTriggerDurationMs)
             : totalFrames(totalFrames), endPosition(endPosition), startPosition(startPosition), intervalMs(intervalMs),
               shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs) {
+    }
+
+    IntervalometerSettings() {
+        shutterTriggerDurationMs = TIME_FOR_SHUTTER_TRIGGER;
     }
 
     int getTotalFrames() const {
@@ -47,6 +53,14 @@ public:
 
     void setShutterSpeedMs(long shutterSpeedMs) {
         IntervalometerSettings::shutterSpeedMs = shutterSpeedMs;
+    }
+
+    void setStartPosition(long startPosition) {
+        IntervalometerSettings::startPosition = startPosition;
+    }
+
+    void setEndPosition(long endPosition) {
+        IntervalometerSettings::endPosition = endPosition;
     }
 
     /***

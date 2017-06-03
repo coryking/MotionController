@@ -22,6 +22,11 @@ void showConfigIvInterval();
 void showConfigAlarmTime();
 void showConfigAlarmSetPoint();
 
+void showHomingScreen();
+void showHomingLowerBound(long);
+void showHomingUpperBound(long);
+void showHomed();
+
 void printDateTimeTask(uint32_t deltaTime);
 
 #endif //MOTIONCONTROLLER_LCD_H

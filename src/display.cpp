@@ -74,3 +74,37 @@ void showConfigAlarmSetPoint() {
     moveToInputArea();
 }
 
+void showHomingScreen() {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Homing this shit...");
+    lcd.setCursor(0,2);
+    lcd.print("Finding lower bound");
+}
+
+void showHomingLowerBound(long totalSteps) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Found Lower Bound!");
+    lcd.setCursor(0,1);
+    lcd.print("Total Steps: ");
+    lcd.print(totalSteps);
+    lcd.setCursor(0,2);
+    lcd.print("Moving to Zero...");
+
+}
+
+void showHomingUpperBound(long currentPosition) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Found Upper Bound!");
+    lcd.setCursor(0,1);
+    lcd.print("Position is: ");
+    lcd.print(currentPosition);
+    lcd.setCursor(0,2);
+    lcd.print("Finding Lower Bound");
+}
+
+void showHomed() {
+    lcd.clear();
+}

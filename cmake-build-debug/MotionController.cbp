@@ -335,6 +335,12 @@
 		<Unit filename="/Users/cory/ClionProjects/MotionController/src/targetver.h">
 			<Option target="MotionController"/>
 		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/tasker.cpp">
+			<Option target="MotionController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/MotionController/src/tasker.h">
+			<Option target="MotionController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/MotionController/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

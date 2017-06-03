@@ -7,6 +7,10 @@
 #include "display.h"
 #include "rtc.h"
 #include "Pins.h"
+#include "tasker.h"
+
+FunctionTask taskPrintDateTime(printDateTimeTask, MsToTaskTime(500));
+
 
 using namespace std;
 
@@ -39,6 +43,7 @@ void SystemState::StartAlarm(AlarmData *data) {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
         TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_SAVE_ALARM_SETPOINT,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
     END_TRANSITION_MAP(data)
 }
 
@@ -62,6 +67,7 @@ void SystemState::AlarmFired() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -85,6 +91,7 @@ void SystemState::BeginShooting() {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -108,13 +115,14 @@ void SystemState::HomeSlider() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::HomingComplete() {
+void SystemState::HomingComplete(HomingData* data) {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
-                    TRANSITION_MAP_ENTRY(ST_IDLE)   // ST_HOMING
+                    TRANSITION_MAP_ENTRY(ST_SAVE_HOMING_DATA)   // ST_HOMING
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_IDLE
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_WAIT_FOR_ALARM
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN) // ST_SHOOTING
@@ -130,7 +138,8 @@ void SystemState::HomingComplete() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
-    END_TRANSITION_MAP(NULL)
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+    END_TRANSITION_MAP(data)
 }
 
 void SystemState::ShootingComplete() {
@@ -152,6 +161,8 @@ void SystemState::ShootingComplete() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+
     END_TRANSITION_MAP(NULL)
 }
 
@@ -174,6 +185,8 @@ void SystemState::Back() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+
     END_TRANSITION_MAP(NULL)
 }
 
@@ -197,17 +210,19 @@ void SystemState::SaveData(TextData* data) {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+
     END_TRANSITION_MAP(data)
 }
 
 void SystemState::ShowConfiguration() {
     BEGIN_TRANSITION_MAP
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_HOMING
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_IDLE
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_WAIT_FOR_ALARM
-                    TRANSITION_MAP_ENTRY(CANNOT_HAPPEN) // ST_SHOOTING
-                    TRANSITION_MAP_ENTRY(ST_CONFIG_INTERVALOMETER) // ST_CONFIG_INTERVALOMETER
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
+                    TRANSITION_MAP_ENTRY(ST_CONFIG_INTERVALOMETER)   // ST_IDLE
+                    TRANSITION_MAP_ENTRY(ST_CONFIG_INTERVALOMETER)   // ST_WAIT_FOR_ALARM
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_INTERVALOMETER
                     TRANSITION_MAP_ENTRY(ST_IDLE) // ST_CONFIG_IV_FRAMES
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_FRAMES) // ST_CONFIG_IV_SHUTTER_SPEED
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_SHUTTER_SPEED) // ST_CONFIG_IV_INTERVAL
@@ -219,6 +234,8 @@ void SystemState::ShowConfiguration() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+
     END_TRANSITION_MAP(NULL)
 }
 
@@ -241,11 +258,18 @@ void SystemState::NextStep() {
                     TRANSITION_MAP_ENTRY(ST_CONFIG_ALARM) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(ST_CONFIG_ALARM_SETPOINT) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_SAVE_ALARM_SETPOINT
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
+
     END_TRANSITION_MAP(NULL)
 }
 
 STATE_DEFINE(SystemState,   Homing, NoEventData) {
 
+}
+
+STATE_DEFINE(SystemState, SaveHomingData, HomingData) {
+    this->settings->setEndPosition(data->sliderSteps);
+    InternalEvent(ST_IDLE);
 }
 
 STATE_DEFINE(SystemState, Unhomed, NoEventData) {
@@ -254,6 +278,7 @@ STATE_DEFINE(SystemState, Unhomed, NoEventData) {
 
 STATE_DEFINE(SystemState,   Idle,   NoEventData)
 {
+    Serial.println("Going idle.... whew....");
     // Noop
 }
 
@@ -326,6 +351,7 @@ STATE_DEFINE(SystemState, SaveIvShutterSpeed, TextData) {
 
 STATE_DEFINE(SystemState, SaveIvInterval, TextData) {
     this->settings->setIntervalMs(data->text.toInt() * 1000);
+    this->NextStep();
 }
 
 STATE_DEFINE(SystemState, SaveAlarmTime, TextData) {
@@ -343,6 +369,14 @@ ENTRY_DEFINE(SystemState, ConfigEntry, NoEventData) {
 
 EXIT_DEFINE(SystemState, ConfigExit) {
     this->_isKeyboardActive = false;
+}
+
+ENTRY_DEFINE(SystemState, EnterIdle, NoEventData) {
+    taskManager.StartTask(&taskPrintDateTime);
+}
+
+EXIT_DEFINE(SystemState,ExitIdle) {
+    taskManager.StopTask(&taskPrintDateTime);
 }
 
 SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
@@ -367,5 +401,7 @@ SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
     stateMachine.setStepperRunningCallback([this]() {
         return stepper->isRunning();
     });
+
+    settings = new IntervalometerSettings();
 }
 
