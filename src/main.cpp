@@ -8,6 +8,7 @@
 
 #include "I2C.h"
 #include "rtc.h"
+#include "KeyController.h"
 
 #include "SystemState.h"
 #include "Homer.h"

@@ -21,6 +21,9 @@
 
 #define POT_PIN A0
 
+#define KEYPAD_I2CADDR 0x22
+#define LCD_I2CADDR 0x27
+
 
 #define INFINITE_MOTION 100000
 #define BUFFER_STEPS 40 // "padding" for the limit switches...
