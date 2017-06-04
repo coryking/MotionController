@@ -9,11 +9,26 @@
 hd44780_I2Cexp lcd(LCD_I2CADDR, I2Cexp_BOARD_SAINSMART);
 
 void setupLcd() {
-    lcd.begin(20,4);
+    lcd.begin(LCD_COLS,LCD_ROWS);
     lcd.clear();
     lcd.print("Cory's Badass");
     lcd.setCursor(0,1);
     lcd.print("Motion Controller");
+}
+
+void printText(String text, uint8_t col, uint8_t row) {
+    lcd.setCursor(col,row);
+    lcd.print(text);
+}
+
+void centerText(String text, uint8_t row) {
+    auto pos = (LCD_COLS - text.length()) / 2;
+    printText(text, pos,row);
+}
+
+void rightAlign(String text, uint8_t row) {
+    auto pos = (LCD_COLS - text.length());
+    printText(text, pos,row);
 }
 
 void printDateTimeTask(uint32_t deltaTime)
@@ -30,70 +45,58 @@ void printDateTimeTask(uint32_t deltaTime)
                dt.Hour(),
                dt.Minute(),
                dt.Second() );
-    lcd.setCursor(0,3);
-    lcd.print(datestring);
+    printText(datestring,0,3);
 }
 
 void moveToInputArea() {
     lcd.setCursor(0,1);
 }
 
-void showConfigIvFrames() {
+void showConfigText(String text) {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Number of Frames:");
+    printText(text, 0, 0);
     moveToInputArea();
+}
+
+void showConfigIvFrames() {
+    showConfigText("Number of Frames:");
 }
 
 void showConfigIvShutterSpeed() {
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Shutter Speed (sec):");
-    moveToInputArea();
+    showConfigText("Shutter Speed (sec):");
 }
 
 void showConfigIvInterval() {
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Interval (sec):");
-    moveToInputArea();
+    showConfigText("Interval (sec):");
 }
 
 void showConfigAlarmTime() {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Clock:");
-    lcd.setCursor(3,0);
-    lcd.print("(yyyymmddhhmmss)");
+    printText("Clock:", 0, 0);
+    printText("(yyyymmddhhmmss)", 0, 3);
     moveToInputArea();
 }
 
 void showConfigAlarmSetPoint() {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Start Time:");
-    lcd.setCursor(3,0);
-    lcd.print("(yyyymmddhhmmss)");
+    printText("Start Time:", 0 ,0);
+    printText("(yyyymmddhhmmss)", 0 , 3);
     moveToInputArea();
 }
 
 void showHomingScreen() {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Homing this shit...");
-    lcd.setCursor(0,2);
-    lcd.print("Finding lower bound");
+    printText("Homing this shit...", 0,0);
+    printText("Finding lower bound", 0, 2);
 }
 
 void showHomingLowerBound(long totalSteps) {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Found Lower Bound!");
+    printText("Found Lower Bound!", 0,0);
     lcd.setCursor(0,1);
     lcd.print("Total Steps: ");
     lcd.print(totalSteps);
-    lcd.setCursor(0,2);
-    lcd.print("Moving to Zero...");
+    printText("Moving to Zero...", 0, 2);
 
 }
 
@@ -113,15 +116,12 @@ void showHomed() {
 }
 void showShootingFinished() {
     lcd.clear();
-    lcd.setCursor(1,1);
-    lcd.print("Finished Shooting.");
+    centerText("Finished Shooting.", 1);
 }
 void showShootingScreen(String action, String action2, long currentFrame, long framesRemaining) {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print(action);
-    lcd.setCursor(0,1);
-    lcd.print(action2);
+    printText(action, 0, 0);
+    printText(action2, 0, 1);
     lcd.setCursor(0,2);
     lcd.print("Frame ");
     lcd.print(currentFrame + 1);
@@ -129,13 +129,42 @@ void showShootingScreen(String action, String action2, long currentFrame, long f
     lcd.print(framesRemaining);
 }
 
+void showYesNowScreen(String question) {
+    lcd.clear();
+    centerText(question, 1);
+    centerText("1 - yes, 2 - no", 2);
+}
+
+void showWaitingForAlarmScreen(const RtcDateTime &startTime) {
+    lcd.clear();
+    centerText("Waiting to begin", 0);
+
+    char datestring[20];
+
+    snprintf_P(datestring,
+               20,
+               PSTR("%02u:%02u:%02u"),
+               startTime.Hour(),
+               startTime.Minute(),
+               startTime.Second() );
+    centerText(datestring,1);
+    rightAlign("(C)ancel", 2);
+}
+
+void showIdleMenu() {
+    lcd.clear();
+    printText("A - Set Interval", 0, 0);
+    printText("B - Set Alarm", 0, 1);
+    printText("C - Set Time", 0 ,2);
+}
+
 void displayTimeRemaining(long currentDuration, long interval) {
     long remaining = (interval - currentDuration)/1000;
     lcd.setCursor(0,3);
     lcd.print(remaining);
     lcd.print("s remaining");
-
 }
+
 
 
 const char *spaceString = "                    ";

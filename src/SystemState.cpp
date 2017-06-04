@@ -22,7 +22,7 @@ using namespace std;
         ST_MAX_STATES
  */
 
-void SystemState::StartAlarm(AlarmData *data) {
+void SystemState::StartAlarm() {
     Serial.println("Starting Alarm!");
     BEGIN_TRANSITION_MAP
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
@@ -49,7 +49,10 @@ void SystemState::StartAlarm(AlarmData *data) {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
-    END_TRANSITION_MAP(data)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
+
+    END_TRANSITION_MAP(NULL)
 }
 
 void SystemState::AlarmFired() {
@@ -79,7 +82,8 @@ void SystemState::AlarmFired() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -110,6 +114,8 @@ void SystemState::BeginShooting() {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -139,6 +145,8 @@ void SystemState::Run() {
                     TRANSITION_MAP_ENTRY(ST_SHOOTING_SHUTTER_WAIT) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(ST_SHOOTING_SHUTTLE) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(ST_SHOOTING_PAUSED) // ST_SHOOTING_PAUSED,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -168,7 +176,8 @@ void SystemState::HomeSlider() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -198,7 +207,8 @@ void SystemState::HomingComplete(HomingData* data) {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
-
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(data)
 }
 
@@ -228,6 +238,8 @@ void SystemState::Back() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -258,6 +270,8 @@ void SystemState::SaveData(TextData* data) {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(data)
 }
 
@@ -287,6 +301,8 @@ void SystemState::ShowConfiguration() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -306,9 +322,9 @@ void SystemState::NextStep() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_SHUTTER_SPEED) // ST_SAVE_IV_FRAMES,
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_INTERVAL) // ST_SAVE_IV_SHUTTER_SPEED,
-                    TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_SAVE_IV_INTERVAL,
-                    TRANSITION_MAP_ENTRY(ST_CONFIG_ALARM_SETPOINT) // ST_SAVE_ALARM_TIME,
-                    TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_SAVE_ALARM_SETPOINT
+                    TRANSITION_MAP_ENTRY(ST_ASK_START_SHOOTING) // ST_SAVE_IV_INTERVAL,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SAVE_ALARM_TIME,
+                    TRANSITION_MAP_ENTRY(ST_ASK_START_ALARM) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
@@ -316,6 +332,8 @@ void SystemState::NextStep() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+                    TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_ASK_START_ALARM,
+                    TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -338,19 +356,20 @@ STATE_DEFINE(SystemState,   Idle,   NoEventData)
     // Noop
 }
 
-STATE_DEFINE(SystemState,   WaitForAlarm, AlarmData) {
+STATE_DEFINE(SystemState,   WaitForAlarm, NoEventData) {
+    auto dt = this->settings->getStartTime();
     DS3231AlarmOne alarm1(
-            data->day,
-            data->hour,
-            data->minute,
-            data->second,
+            dt.DayOfWeek(),
+            dt.Hour(),
+            dt.Minute(),
+            dt.Second(),
             DS3231AlarmOneControl_HoursMinutesSecondsMatch
     );
     globalRtc.SetAlarmOne(alarm1);
 
     globalRtc.LatchAlarmsTriggeredFlags();
     attachAlarmInterupt();
-
+    showWaitingForAlarmScreen(dt);
 }
 
 GUARD_DEFINE(SystemState, HasShootingData, NoEventData) {
@@ -529,6 +548,15 @@ STATE_DEFINE(SystemState, ShootingPaused, NoEventData) {
             InternalEvent(ST_SHOOTING_FRAME);
         }
     }
+}
+
+
+STATE_DEFINE(SystemState, AskStartAlarm, NoEventData) {
+    showYesNowScreen("Start Alarm?");
+}
+
+STATE_DEFINE(SystemState, AskStartShooting, NoEventData) {
+    showYesNowScreen("Begin Shooting?");
 }
 
 void SystemState::showTimeRemaining(uint32_t delta) {

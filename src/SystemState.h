@@ -21,13 +21,6 @@
 
 typedef void (*voidFuncPtr)(void);
 
-struct AlarmData : public EventData {
-    uint8_t day;
-    uint8_t hour;
-    uint8_t minute;
-    uint8_t second;
-};
-
 struct TextData : public EventData {
     String text;
 };
@@ -44,7 +37,7 @@ public:
 
     void HomeSlider();
     void HomingComplete(HomingData*);
-    void StartAlarm(AlarmData*);
+    void StartAlarm();
     void AlarmFired();
     void BeginShooting();
     void Back();
@@ -103,6 +96,8 @@ public:
         ST_SHOOTING_SHUTTER_WAIT,
         ST_SHOOTING_SHUTTLE,
         ST_SHOOTING_PAUSED,
+        ST_ASK_START_ALARM,
+        ST_ASK_START_SHOOTING,
         ST_MAX_STATES
     };
 
@@ -159,7 +154,7 @@ private:
     STATE_DECLARE(SystemState, Unhomed, NoEventData);
     STATE_DECLARE(SystemState, Homing, NoEventData);
     STATE_DECLARE(SystemState,  Idle,   NoEventData);
-    STATE_DECLARE(SystemState,  WaitForAlarm,   AlarmData);
+    STATE_DECLARE(SystemState,  WaitForAlarm,   NoEventData);
     EXIT_DECLARE(SystemState, ExitWaitForAlarm);
     STATE_DECLARE(SystemState,  Shooting,  NoEventData);
     GUARD_DECLARE(SystemState, HasShootingData,NoEventData);
@@ -187,6 +182,8 @@ private:
     STATE_DECLARE(SystemState, ShootingShuttle, NoEventData);
     STATE_DECLARE(SystemState, ShootingPaused, NoEventData);
     GUARD_DECLARE(SystemState, IsNotMoving, NoEventData);
+    STATE_DECLARE(SystemState, AskStartAlarm, NoEventData);
+    STATE_DECLARE(SystemState, AskStartShooting, NoEventData);
 
     // state map to define state function order
     BEGIN_STATE_MAP_EX
@@ -214,6 +211,8 @@ private:
         STATE_MAP_ENTRY_EX(&ShootingShutterWait)
         STATE_MAP_ENTRY_EX(&ShootingShuttle)
         STATE_MAP_ENTRY_EX(&ShootingPaused)
+        STATE_MAP_ENTRY_EX(&AskStartAlarm)
+        STATE_MAP_ENTRY_EX(&AskStartShooting)
     END_STATE_MAP_EX
 
 };

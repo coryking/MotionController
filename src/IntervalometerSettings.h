@@ -19,7 +19,7 @@ public:
     }
 
     IntervalometerSettings() : totalFrames(5), endPosition(1), startPosition(0), intervalMs(3000),
-                               shutterSpeedMs(1000), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER), startTime(NULL), _isAlarmEnabled(false){
+                               shutterSpeedMs(1000), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER), _isAlarmEnabled(false){
         this->startTime = globalRtc.GetDateTime();
     }
 

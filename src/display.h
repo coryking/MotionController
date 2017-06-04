@@ -10,7 +10,11 @@
 #include <Task.h>
 #include <hd44780.h> // include hd44780 library header file
 #include <hd44780ioClass/hd44780_I2Cexp.h> // i/o expander/backpack class
+#include <RtcDateTime.h>
 #include "Pins.h"
+
+#define LCD_ROWS 4
+#define LCD_COLS 20
 
 extern hd44780_I2Cexp lcd;
 
@@ -26,6 +30,10 @@ void showHomingScreen();
 void showHomingLowerBound(long);
 void showHomingUpperBound(long);
 void showHomed();
+void showIdleMenu();
+
+void showYesNowScreen(String question);
+void showWaitingForAlarmScreen(const RtcDateTime &startTime);
 
 void displayTimeRemaining(long currentDuration, long interval);
 void showShootingFinished();
