@@ -511,7 +511,7 @@ STATE_DEFINE(SystemState, ShootingPaused, NoEventData) {
         Serial.print(" actual duration was ");
         Serial.println(currentDuration);
         this->currentFrame++;
-        taskManager.StopTask(_showRemainingTime);
+        //taskManager.StopTask(_showRemainingTime);
         if(this->currentFrame >= this->settings->getTotalFrames()) {
             showShootingFinished();
 
