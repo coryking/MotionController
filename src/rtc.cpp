@@ -109,6 +109,24 @@ RtcDateTime parseDateTimeString(String dtString) {
     return dt;
 }
 
+
+RtcDateTime parseTimeString(String dtString) {
+    auto now = globalRtc.GetDateTime();
+    if(dtString.length() != 8)
+        return now;
+
+    RtcDateTime dt(
+            now.Year(),
+            now.Month(),
+            now.Day(),
+            getIntFromString(dtString,0,2),  // hh
+            getIntFromString(dtString,3,5),  // mm
+            getIntFromString(dtString,6,8) // ss
+    );
+
+    return dt;
+}
+
 String toDateTimeString(const RtcDateTime &dt) {
     char datestring[20];
 
@@ -118,6 +136,19 @@ String toDateTimeString(const RtcDateTime &dt) {
                dt.Year(),
                dt.Month(),
                dt.Day(),
+               dt.Hour(),
+               dt.Minute(),
+               dt.Second() );
+    return String(datestring);
+}
+
+
+String toTimeString(const RtcDateTime &dt) {
+    char datestring[20];
+
+    snprintf_P(datestring,
+               20,
+               PSTR("%02u:%02u:%02u"),
                dt.Hour(),
                dt.Minute(),
                dt.Second() );

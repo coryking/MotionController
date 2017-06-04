@@ -210,6 +210,9 @@ void keypadEvent(KeypadEvent key){
                     systemState.StartAlarm();
                 else
                     systemState.GoIdle();
+            } else {
+                if(key=='C')
+                    systemState.GoIdle();
             }
             break;
         default:

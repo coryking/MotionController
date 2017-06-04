@@ -29,8 +29,11 @@ void alarm_callback();
  * @return parsed date time
  */
 RtcDateTime parseDateTimeString(String dtString);
+RtcDateTime parseTimeString(String dtString);
 
 String toDateTimeString(const RtcDateTime &dt);
+String toTimeString(const RtcDateTime &dt);
+
 bool Alarmed();
 
 #endif //FISHTANKCONTROLLER_RTC_H

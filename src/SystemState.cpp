@@ -49,8 +49,8 @@ void SystemState::StartAlarm() {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
+        TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_ASK_START_ALARM,
+        TRANSITION_MAP_ENTRY(ST_WAIT_FOR_ALARM) // ST_ASK_START_SHOOTING,
 
     END_TRANSITION_MAP(NULL)
 }
@@ -114,8 +114,8 @@ void SystemState::BeginShooting() {
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
         TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_ALARM,
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ASK_START_SHOOTING,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_ASK_START_ALARM,
+        TRANSITION_MAP_ENTRY(ST_SHOOTING) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
 }
 
@@ -312,7 +312,7 @@ void SystemState::GoIdle() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_IDLE
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_WAIT_FOR_ALARM
+                    TRANSITION_MAP_ENTRY(ST_IDLE)   // ST_WAIT_FOR_ALARM
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_INTERVALOMETER
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_FRAMES
@@ -508,9 +508,9 @@ STATE_DEFINE(SystemState, ConfigAlarmTime, NoEventData) {
 
 STATE_DEFINE(SystemState, ConfigAlarmSetPoint, NoEventData) {
     showConfigAlarmSetPoint();
-    auto dt = (this->settings->getStartTime() == NULL) ? globalRtc.GetDateTime() : this->settings->getStartTime();
+    RtcDateTime dt = this->settings->isStartTimeSet() ? this->settings->getStartTime() : globalRtc.GetDateTime();
 
-    callBufferCb(dt);
+    callBufferTimeCb(dt);
 }
 
 STATE_DEFINE(SystemState, SaveIvFrames, TextData) {
@@ -546,8 +546,13 @@ STATE_DEFINE(SystemState, SaveAlarmTime, TextData) {
 }
 
 STATE_DEFINE(SystemState, SaveAlarmSetPoint, TextData) {
-    RtcDateTime dt = parseDateTimeString(data->text);
+    Serial.println(data->text);
+    RtcDateTime dt = parseTimeString(data->text);
+    Serial.println(dt.Hour());
+    Serial.println(dt.Minute());
+    Serial.println(dt.Second());
     this->settings->setStartTime(dt);
+    this->NextStep();
 }
 
 ENTRY_DEFINE(SystemState, ConfigEntry, NoEventData) {

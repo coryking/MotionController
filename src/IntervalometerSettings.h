@@ -15,12 +15,11 @@ class IntervalometerSettings {
 public:
     IntervalometerSettings(int totalFrames, long startPosition, long endPosition, long intervalMs, long shutterSpeedMs, long shutterTriggerDurationMs, RtcDateTime startTime, bool isAlarmEnabled)
             : totalFrames(totalFrames), endPosition(endPosition), startPosition(startPosition), intervalMs(intervalMs),
-              shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs), startTime(startTime) {
+              shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs), startTime(startTime), _isStartTimeSet(true) {
     }
 
     IntervalometerSettings() : totalFrames(5), endPosition(1), startPosition(0), intervalMs(3000),
                                shutterSpeedMs(1000), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER) {
-        this->startTime = globalRtc.GetDateTime();
     }
 
     int getTotalFrames() const {
@@ -93,6 +92,11 @@ public:
 
     void setStartTime(const RtcDateTime &startTime) {
         IntervalometerSettings::startTime = startTime;
+        _isStartTimeSet=true;
+    }
+
+    bool isStartTimeSet() {
+        return _isStartTimeSet;
     }
 
 private:
@@ -106,6 +110,7 @@ private:
     long shutterTriggerDurationMs;
 
     RtcDateTime startTime;
+    bool _isStartTimeSet = false;
 };
 
 

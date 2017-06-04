@@ -80,7 +80,7 @@ void showConfigAlarmTime() {
 void showConfigAlarmSetPoint() {
     lcd.clear();
     printText("Start Time:", 0 ,0);
-    printText("(yyyymmddhhmmss)", 0 , 3);
+    printText("(hh:mm:ss)", 0 , 3);
     moveToInputArea();
 }
 

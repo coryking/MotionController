@@ -132,6 +132,9 @@ private:
     void callBufferCb(const RtcDateTime &dt) {
         callBufferCb(toDateTimeString(dt));
     }
+    void callBufferTimeCb(const RtcDateTime &dt) {
+        callBufferCb(toTimeString(dt));
+    }
 
     void callBufferCb(String data) {
         if(this->_setBufferCb)
