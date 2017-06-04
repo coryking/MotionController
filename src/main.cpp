@@ -187,13 +187,29 @@ void keypadEvent(KeypadEvent key){
                         break;
                 }
             } else if (systemState.GetCurrentState() == SystemState::ST_IDLE) {
-                if(key == 'A') {
-                    systemState.ShowConfiguration();
-                } else if (key == 'B') {
-                    systemState.BeginShooting();
-                } else if (key == 'C') {
-                    systemState.HomeSlider();
+                switch(key) {
+                    case 'A':
+                        systemState.ShowIntervalSettings();
+                        break;
+                    case 'B':
+                        systemState.ShowAlarmSettings();
+                        break;
+                    case 'C':
+                        systemState.ShowTimeSettings();
+                        break;
+                    default:
+                        break;
                 }
+            } else if (systemState.GetCurrentState() == SystemState::ST_ASK_START_SHOOTING) {
+                if(key == '1')
+                    systemState.BeginShooting();
+                else
+                    systemState.GoIdle();
+            } else if (systemState.GetCurrentState() == SystemState::ST_ASK_START_ALARM) {
+                if(key == '1')
+                    systemState.StartAlarm();
+                else
+                    systemState.GoIdle();
             }
             break;
         default:

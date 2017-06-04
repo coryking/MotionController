@@ -43,7 +43,10 @@ public:
     void Back();
     void Run();
     void SaveData(TextData*);
-    void ShowConfiguration();
+    void ShowIntervalSettings();
+    void ShowAlarmSettings();
+    void ShowTimeSettings();
+    void GoIdle();
 
     void setStepper(AccelStepper *stepper){ this->stepper = stepper;}
 
