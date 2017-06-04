@@ -87,3 +87,39 @@ void attachAlarmInterupt() {
 void detachAlarmInterupt() {
     detachInterrupt(RTC_INTERUPT_PIN);
 }
+
+uint16_t getIntFromString(String str, uint startIndex, uint endIndex) {
+    auto subst = str.substring(startIndex, endIndex);
+    return subst.toInt();
+}
+
+RtcDateTime parseDateTimeString(String dtString) {
+    if(dtString.length() != 14)
+        return NULL;
+
+    RtcDateTime dt(
+        getIntFromString(dtString,0,3),  // yyyy
+        getIntFromString(dtString,4,5),  // mm
+        getIntFromString(dtString,6,7),  // dd
+        getIntFromString(dtString,8,9),  // hh
+        getIntFromString(dtString,10,11),  // mm
+        getIntFromString(dtString,12,13) // ss
+    );
+
+    return dt;
+}
+
+String toDateTimeString(const RtcDateTime &dt) {
+    char datestring[20];
+
+    snprintf_P(datestring,
+               20,
+               PSTR("%04u%02u%02u%02u%02u%02u"),
+               dt.Year(),
+               dt.Month(),
+               dt.Day(),
+               dt.Hour(),
+               dt.Minute(),
+               dt.Second() );
+    return String(datestring);
+}

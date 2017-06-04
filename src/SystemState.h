@@ -131,6 +131,10 @@ private:
             this->_inactiveCb();
     }
 
+    void callBufferCb(const RtcDateTime &dt) {
+        callBufferCb(toDateTimeString(dt));
+    }
+
     void callBufferCb(String data) {
         if(this->_setBufferCb)
         {

@@ -23,6 +23,14 @@ void detachAlarmInterupt();
 
 void alarm_callback();
 
+/**
+ * Parse a date-time string
+ * @param dtString in format of yyyymmddhhmmss
+ * @return parsed date time
+ */
+RtcDateTime parseDateTimeString(String dtString);
+
+String toDateTimeString(const RtcDateTime &dt);
 bool Alarmed();
 
 #endif //FISHTANKCONTROLLER_RTC_H

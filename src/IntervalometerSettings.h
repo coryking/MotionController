@@ -5,19 +5,22 @@
 #ifndef MOTIONCONTROLLER_INTERVALOMETER_H
 #define MOTIONCONTROLLER_INTERVALOMETER_H
 
+#include <RtcDateTime.h>
+#include "rtc.h"
+
 #define TIME_FOR_SHUTTER_TRIGGER 200
 
 
 class IntervalometerSettings {
 public:
-    IntervalometerSettings(int totalFrames, long startPosition, long endPosition, long intervalMs, long shutterSpeedMs, long shutterTriggerDurationMs)
+    IntervalometerSettings(int totalFrames, long startPosition, long endPosition, long intervalMs, long shutterSpeedMs, long shutterTriggerDurationMs, RtcDateTime startTime, bool isAlarmEnabled)
             : totalFrames(totalFrames), endPosition(endPosition), startPosition(startPosition), intervalMs(intervalMs),
-              shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs) {
+              shutterSpeedMs(shutterSpeedMs), shutterTriggerDurationMs(shutterTriggerDurationMs), startTime(startTime), _isAlarmEnabled(isAlarmEnabled) {
     }
 
     IntervalometerSettings() : totalFrames(5), endPosition(1), startPosition(0), intervalMs(3000),
-                               shutterSpeedMs(1000), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER){
-
+                               shutterSpeedMs(1000), shutterTriggerDurationMs(TIME_FOR_SHUTTER_TRIGGER), startTime(NULL), _isAlarmEnabled(false){
+        this->startTime = globalRtc.GetDateTime();
     }
 
     int getTotalFrames() const {
@@ -84,6 +87,22 @@ public:
         return shutterSpeedMs;
     }
 
+    const RtcDateTime &getStartTime() const {
+        return startTime;
+    }
+
+    void setStartTime(const RtcDateTime &startTime) {
+        IntervalometerSettings::startTime = startTime;
+    }
+
+    bool isAlarmEnabled() const {
+        return _isAlarmEnabled;
+    }
+
+    void setAlarmEnabled(bool _isAlarmEnabled) {
+        IntervalometerSettings::_isAlarmEnabled = _isAlarmEnabled;
+    }
+
 private:
     int totalFrames;
 
@@ -93,6 +112,9 @@ private:
     long intervalMs;
     long shutterSpeedMs;
     long shutterTriggerDurationMs;
+
+    bool _isAlarmEnabled = false;
+    RtcDateTime startTime;
 };
 
 

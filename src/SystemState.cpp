@@ -388,11 +388,15 @@ STATE_DEFINE(SystemState, ConfigAlarm, NoEventData) {
 }
 
 STATE_DEFINE(SystemState, ConfigAlarmTime, NoEventData) {
-
+    showConfigAlarmTime();
+    callBufferCb(globalRtc.GetDateTime());
 }
 
 STATE_DEFINE(SystemState, ConfigAlarmSetPoint, NoEventData) {
+    showConfigAlarmSetPoint();
+    auto dt = (this->settings->getStartTime() == NULL) ? globalRtc.GetDateTime() : this->settings->getStartTime();
 
+    callBufferCb(dt);
 }
 
 STATE_DEFINE(SystemState, SaveIvFrames, TextData) {
@@ -420,11 +424,16 @@ STATE_DEFINE(SystemState, SaveIvInterval, TextData) {
 }
 
 STATE_DEFINE(SystemState, SaveAlarmTime, TextData) {
+    RtcDateTime dt = parseDateTimeString(data->text);
+    if(dt != NULL)
+        globalRtc.SetDateTime(dt);
 
+    this->NextStep();
 }
 
 STATE_DEFINE(SystemState, SaveAlarmSetPoint, TextData) {
-
+    RtcDateTime dt = parseDateTimeString(data->text);
+    this->settings->setStartTime(dt);
 }
 
 ENTRY_DEFINE(SystemState, ConfigEntry, NoEventData) {
