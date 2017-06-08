@@ -43,4 +43,6 @@ String fillString(String str, uint8_t fillTo);
 
 void printDateTimeTask(uint32_t deltaTime);
 
+void OnHandleLedTask(uint32_t);
+
 #endif //MOTIONCONTROLLER_LCD_H

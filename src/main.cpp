@@ -53,6 +53,8 @@ ulong last_display;
 void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
+FunctionTask taskHandleLED(OnHandleLedTask, MsToTaskTime(250));
+
 void setup()
 {
 
@@ -108,6 +110,8 @@ void setup()
         alarmData->second=rtcDate.Second() % 30;
         systemState.StartAlarm(alarmData); */
     });
+
+    taskManager.StartTask(&taskHandleLED);
 
     homer.StartHoming();
     systemState.HomeSlider();

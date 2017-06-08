@@ -177,3 +177,10 @@ String fillString(String str, uint8_t fillTo) {
     str += spaceString[20 - toFill];
     return str;
 }
+
+void OnHandleLedTask(uint32_t) {
+    auto val = analogRead(A0);
+
+    analogWrite(LCD_PWM_PIN, val);
+
+}

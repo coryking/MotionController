@@ -463,7 +463,6 @@ STATE_DEFINE(SystemState,   WaitForAlarm, NoEventData) {
     globalRtc.SetAlarmOne(alarm1);
 
     globalRtc.LatchAlarmsTriggeredFlags();
-    attachAlarmInterupt();
     showWaitingForAlarmScreen(dt);
 }
 
@@ -472,7 +471,6 @@ GUARD_DEFINE(SystemState, HasShootingData, NoEventData) {
 }
 
 EXIT_DEFINE(SystemState, ExitWaitForAlarm) {
-    detachAlarmInterupt();
 }
 
 STATE_DEFINE(SystemState, ConfigIntervalometer, NoEventData) {

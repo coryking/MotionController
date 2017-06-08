@@ -74,20 +74,6 @@ bool Alarmed() {
     return wasAlarmed;
 }
 
-void alarm_callback() {
-    didGetAlarm = true;
-}
-
-void attachAlarmInterupt() {
-    digitalWrite(RTC_INTERUPT_PIN, HIGH);
-    pinMode(RTC_INTERUPT_PIN, INPUT_PULLUP);
-    attachInterrupt(RTC_INTERUPT_PIN, alarm_callback, FALLING);
-}
-
-void detachAlarmInterupt() {
-    detachInterrupt(RTC_INTERUPT_PIN);
-}
-
 uint16_t getIntFromString(String str, uint startIndex, uint endIndex) {
     auto subst = str.substring(startIndex, endIndex);
     return subst.toInt();

@@ -16,12 +16,6 @@ extern RTC_CLOCK globalRtc;
 
 void setupRtc(Print *display);
 
-extern volatile bool didGetAlarm;
-
-void attachAlarmInterupt();
-void detachAlarmInterupt();
-
-void alarm_callback();
 
 /**
  * Parse a date-time string
