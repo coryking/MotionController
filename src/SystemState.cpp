@@ -23,7 +23,7 @@ using namespace std;
  */
 
 void SystemState::StartAlarm() {
-    Serial.println("Starting Alarm!");
+    Serial.println(F("Starting Alarm!"));
     BEGIN_TRANSITION_MAP
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -513,7 +513,7 @@ STATE_DEFINE(SystemState, ConfigAlarmSetPoint, NoEventData) {
 
 STATE_DEFINE(SystemState, SaveIvFrames, TextData) {
     long frames = data->text.toInt();
-    Serial.print("Frames: ");
+    Serial.print(F("Frames: "));
     Serial.println(frames);
     this->settings->setTotalFrames(frames);
     this->NextStep();
@@ -521,7 +521,7 @@ STATE_DEFINE(SystemState, SaveIvFrames, TextData) {
 
 STATE_DEFINE(SystemState, SaveIvShutterSpeed, TextData) {
     auto ss = data->text.toInt() * 1000;
-    Serial.print("Shutter Speed: ");
+    Serial.print(F("Shutter Speed: "));
     Serial.println(ss);
     this->settings->setShutterSpeedMs(ss);
     this->NextStep();
@@ -529,7 +529,7 @@ STATE_DEFINE(SystemState, SaveIvShutterSpeed, TextData) {
 
 STATE_DEFINE(SystemState, SaveIvInterval, TextData) {
     long intervalMs = data->text.toInt() * 1000;
-    Serial.print("Interval: ");
+    Serial.print(F("Interval: "));
     Serial.println(intervalMs);
     this->settings->setIntervalMs(intervalMs);
     this->NextStep();
@@ -573,7 +573,7 @@ EXIT_DEFINE(SystemState,ExitIdle) {
 
 STATE_DEFINE(SystemState,   Shooting,  NoEventData) {
     this->currentFrame = 0;
-    this->showShootingDisplay("Starting Timelapse.");
+    this->showShootingDisplay(F("Starting Timelapse."));
     this->stepper->moveTo(this->settings->getStartPosition());
 
     InternalEvent(ST_SHOOTING_POSITIONING);
@@ -586,10 +586,10 @@ STATE_DEFINE(SystemState, ShootingPositioning, NoEventData) {
 }
 
 STATE_DEFINE(SystemState, ShootingFrame, NoEventData) {
-    this->showShootingDisplay("Taking Picture");
+    this->showShootingDisplay(F("Taking Picture"));
     this->startMs = millis();
     //taskManager.StartTask(this->_showRemainingTime);
-    Serial.println("Setting camera pin high!");
+    Serial.println(F("Setting camera pin high!"));
     digitalWrite(CAMERA_PIN, HIGH);
     InternalEvent(ST_SHOOTING_SHUTTER);
 }
