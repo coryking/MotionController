@@ -20,6 +20,8 @@ time_t syncRtcTime() {
 void setupRtc(Print *display) {
     globalRtc.Begin();
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+    globalRtc.Enable32kHzPin(false);
+    globalRtc.SetSquareWavePin(DS3231SquareWavePin_ModeAlarmOne);
 
     if (! globalRtc.IsDateTimeValid()) {
         // following line sets the RTC to the date & time this sketch was compiled
@@ -43,9 +45,6 @@ void setupRtc(Print *display) {
         globalRtc.SetDateTime(compiled);
     }
 
-    globalRtc.Enable32kHzPin(false);
-    globalRtc.SetSquareWavePin(DS3231SquareWavePin_ModeAlarmOne);
-
     display->print("Found RTC Device");
 
     setSyncProvider(syncRtcTime);
@@ -54,23 +53,24 @@ void setupRtc(Print *display) {
 
 bool Alarmed() {
     bool wasAlarmed = false;
-    if (didGetAlarm)
-    {
-        wasAlarmed = true;
-        didGetAlarm = false;
+    //if (didGetAlarm)
+    //{
+        //wasAlarmed = true;
+        //didGetAlarm = false;
         // this gives us which alarms triggered and
         // then allows for others to trigger again
         DS3231AlarmFlag flag = globalRtc.LatchAlarmsTriggeredFlags();
 
         if (flag & DS3231AlarmFlag_Alarm1)
         {
+            wasAlarmed = true;
             Serial.println("alarm one triggered");
         }
         if (flag & DS3231AlarmFlag_Alarm2)
         {
             Serial.println("alarm two triggered");
         }
-    }
+    //}
     return wasAlarmed;
 }
 

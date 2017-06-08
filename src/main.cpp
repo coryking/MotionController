@@ -61,6 +61,7 @@ void setup()
     randomSeed(analogRead(0));
     pinMode(CAMERA_PIN, OUTPUT);
     digitalWrite(CAMERA_PIN, LOW);
+    pinMode(RTC_INTERUPT_PIN, INPUT_PULLUP);
 
     setupI2C();
     setupRtc(&Serial);
@@ -73,7 +74,7 @@ void setup()
 
 
     // Change these to suit your stepper if you want
-    //stepper.setEnablePin(D8);
+    stepper.setEnablePin(SLEEP_PIN);
     stepper.setMaxSpeed(1000);
     stepper.setAcceleration(4000);
 
