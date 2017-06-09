@@ -53,7 +53,7 @@ ulong last_display;
 void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
-FunctionTask taskHandleLED(OnHandleLedTask, MsToTaskTime(250));
+FunctionTask taskHandleLED(OnHandleLedTask, MsToTaskTime(50));
 
 void setup()
 {

@@ -1,6 +1,7 @@
 #ifndef _STATE_MACHINE_H
 #define _STATE_MACHINE_H
 
+#include <Arduino.h>
 #include "DataTypes.h"
 #include <stdio.h>
 #include <typeinfo>
@@ -64,7 +65,7 @@ public:
 		//    InternalEvent(ST_MY_STATE_FUNCTION, new MyEventData());
 		// This next internal event is not valid and causes the assert to fail:
 		//    InternalEvent(ST_MY_STATE_FUNCTION, new OtherEventData());
-		const Data* derivedData = dynamic_cast<const Data*>(data);
+		const Data* derivedData = (Data*)data;//dynamic_cast<const Data*>(data);
 		ASSERT_TRUE(derivedData != NULL);
 
 		// Call the state function
@@ -95,7 +96,7 @@ public:
 	virtual BOOL InvokeGuardCondition(StateMachine* sm, const EventData* data) const 
 	{
 		SM* derivedSM = static_cast<SM*>(sm);		
-		const Data* derivedData = dynamic_cast<const Data*>(data);
+		const Data* derivedData = (Data*)data;//dynamic_cast<const Data*>(data);
 		ASSERT_TRUE(derivedData != NULL);
 
 		// Call the guard function
@@ -124,7 +125,7 @@ public:
 	virtual void InvokeEntryAction(StateMachine* sm, const EventData* data) const
 	{
 		SM* derivedSM = static_cast<SM*>(sm);
-		const Data* derivedData = dynamic_cast<const Data*>(data);
+		const Data* derivedData = (Data*)data;//dynamic_cast<const Data*>(data);
 		ASSERT_TRUE(derivedData != NULL);
 
 		// Call the entry function
@@ -196,13 +197,13 @@ protected:
 	/// External state machine event.
 	/// @param[in] newState - the state machine state to transition to.
 	/// @param[in] pData - the event data sent to the state.
-	void ExternalEvent(BYTE newState, const EventData* pData = NULL);
+	void ICACHE_FLASH_ATTR ExternalEvent(BYTE newState, const EventData* pData = NULL);
 
 	/// Internal state machine event. These events are generated while executing
 	///	within a state machine state.
 	/// @param[in] newState - the state machine state to transition to.
 	/// @param[in] pData - the event data sent to the state.
-	void InternalEvent(BYTE newState, const EventData* pData = NULL);
+	void ICACHE_FLASH_ATTR InternalEvent(BYTE newState, const EventData* pData = NULL);
 	
 private:
 	/// The maximum number of state machine states.
@@ -238,42 +239,42 @@ private:
 
 	/// Set a new current state.
 	/// @param[in] newState - the new state.
-	void SetCurrentState(BYTE newState) { m_currentState = newState; }
+	void ICACHE_FLASH_ATTR SetCurrentState(BYTE newState) { m_currentState = newState; }
 
 	/// State machine engine that executes the external event and, optionally, all 
 	/// internal events generated during state execution.
-	void StateEngine(void); 	
-	void StateEngine(const StateMapRow* const pStateMap);
-	void StateEngine(const StateMapRowEx* const pStateMapEx);
+	void ICACHE_FLASH_ATTR StateEngine(void);
+	void ICACHE_FLASH_ATTR StateEngine(const StateMapRow* const pStateMap);
+	void ICACHE_FLASH_ATTR StateEngine(const StateMapRowEx* const pStateMapEx);
 };
 
 #define STATE_DECLARE(stateMachine, stateName, eventData) \
-	void ST_##stateName(const eventData*); \
+	void ICACHE_FLASH_ATTR ST_##stateName(const eventData*); \
 	StateAction<stateMachine, eventData, &stateMachine::ST_##stateName> stateName;
 	
 #define STATE_DEFINE(stateMachine, stateName, eventData) \
-	void stateMachine::ST_##stateName(const eventData* data)
+	void ICACHE_FLASH_ATTR stateMachine::ST_##stateName(const eventData* data)
 		
 #define GUARD_DECLARE(stateMachine, guardName, eventData) \
-	BOOL GD_##guardName(const eventData*); \
+	BOOL ICACHE_FLASH_ATTR GD_##guardName(const eventData*); \
 	GuardCondition<stateMachine, eventData, &stateMachine::GD_##guardName> guardName;
 	
 #define GUARD_DEFINE(stateMachine, guardName, eventData) \
-	BOOL stateMachine::GD_##guardName(const eventData* data)
+	BOOL ICACHE_FLASH_ATTR stateMachine::GD_##guardName(const eventData* data)
 
 #define ENTRY_DECLARE(stateMachine, entryName, eventData) \
-	void EN_##entryName(const eventData*); \
+	void ICACHE_FLASH_ATTR EN_##entryName(const eventData*); \
 	EntryAction<stateMachine, eventData, &stateMachine::EN_##entryName> entryName;
 	
 #define ENTRY_DEFINE(stateMachine, entryName, eventData) \
-	void stateMachine::EN_##entryName(const eventData* data)
+	void ICACHE_FLASH_ATTR stateMachine::EN_##entryName(const eventData* data)
 
 #define EXIT_DECLARE(stateMachine, exitName) \
-	void EX_##exitName(void); \
+	void ICACHE_FLASH_ATTR EX_##exitName(void); \
 	ExitAction<stateMachine, &stateMachine::EX_##exitName> exitName;
 	
 #define EXIT_DEFINE(stateMachine, exitName) \
-	void stateMachine::EX_##exitName(void)
+	void ICACHE_FLASH_ATTR stateMachine::EX_##exitName(void)
 
 #define BEGIN_TRANSITION_MAP \
     static const BYTE TRANSITIONS[] = {\

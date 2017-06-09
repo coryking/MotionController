@@ -22,7 +22,7 @@ using namespace std;
         ST_MAX_STATES
  */
 
-void SystemState::StartAlarm() {
+void ICACHE_FLASH_ATTR  SystemState::StartAlarm() {
     Serial.println(F("Starting Alarm!"));
     BEGIN_TRANSITION_MAP
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
@@ -55,7 +55,7 @@ void SystemState::StartAlarm() {
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::AlarmFired() {
+void ICACHE_FLASH_ATTR  SystemState::AlarmFired() {
     Serial.println("Alarm Fired!");
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
@@ -87,7 +87,7 @@ void SystemState::AlarmFired() {
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::BeginShooting() {
+void ICACHE_FLASH_ATTR  SystemState::BeginShooting() {
     Serial.println("BeginShooting!");
     BEGIN_TRANSITION_MAP
         TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
@@ -119,7 +119,7 @@ void SystemState::BeginShooting() {
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::Run() {
+void ICACHE_FLASH_ATTR  SystemState::Run() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -150,7 +150,7 @@ void SystemState::Run() {
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::HomeSlider() {
+void ICACHE_FLASH_ATTR  SystemState::HomeSlider() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(ST_HOMING)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -181,7 +181,7 @@ void SystemState::HomeSlider() {
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::HomingComplete(HomingData* data) {
+void ICACHE_FLASH_ATTR  SystemState::HomingComplete(HomingData* data) {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(ST_SAVE_HOMING_DATA)   // ST_HOMING
@@ -212,7 +212,7 @@ void SystemState::HomingComplete(HomingData* data) {
     END_TRANSITION_MAP(data)
 }
 
-void SystemState::Back() {
+void ICACHE_FLASH_ATTR  SystemState::Back() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_HOMING
@@ -244,7 +244,7 @@ void SystemState::Back() {
 }
 
 
-void SystemState::SaveData(TextData* data) {
+void ICACHE_FLASH_ATTR  SystemState::SaveData(TextData* data) {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_HOMING
@@ -275,7 +275,7 @@ void SystemState::SaveData(TextData* data) {
     END_TRANSITION_MAP(data)
 }
 
-void SystemState::ShowIntervalSettings() {
+void ICACHE_FLASH_ATTR  SystemState::ShowIntervalSettings() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -307,7 +307,7 @@ void SystemState::ShowIntervalSettings() {
 }
 
 
-void SystemState::GoIdle() {
+void ICACHE_FLASH_ATTR  SystemState::GoIdle() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -339,7 +339,7 @@ void SystemState::GoIdle() {
 }
 
 
-void SystemState::ShowAlarmSettings() {
+void ICACHE_FLASH_ATTR  SystemState::ShowAlarmSettings() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -370,7 +370,7 @@ void SystemState::ShowAlarmSettings() {
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::ShowTimeSettings(){
+void ICACHE_FLASH_ATTR  SystemState::ShowTimeSettings(){
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
@@ -401,7 +401,7 @@ void SystemState::ShowTimeSettings(){
     END_TRANSITION_MAP(NULL)
 }
 
-void SystemState::NextStep() {
+void ICACHE_FLASH_ATTR  SystemState::NextStep() {
     BEGIN_TRANSITION_MAP
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_UNHOMED
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_HOMING
@@ -657,7 +657,7 @@ STATE_DEFINE(SystemState, AskStartShooting, NoEventData) {
     showYesNowScreen("Begin Shooting?");
 }
 
-void SystemState::showTimeRemaining(uint32_t delta) {
+void ICACHE_FLASH_ATTR  SystemState::showTimeRemaining(uint32_t delta) {
     unsigned long currentDuration = millis() - this->startMs;
     displayTimeRemaining(currentDuration, this->settings->getIntervalMs());
 }

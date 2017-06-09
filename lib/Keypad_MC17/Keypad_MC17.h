@@ -39,6 +39,8 @@
 #ifndef KEYPAD_MC17_H
 #define KEYPAD_MC17_H
 
+#include <Arduino.h>
+
 #include "Keypad.h"
 //#include "../Wire/Wire.h"
 #include "Wire.h"
@@ -49,24 +51,24 @@ public:
 		Keypad(userKeymap, row, col, numRows, numCols) { i2caddr = address; }
 
 	// Keypad function
-	void begin(char *userKeymap);
+	void ICACHE_FLASH_ATTR begin(char *userKeymap);
 	// Wire function
-	void begin(void);
+	void ICACHE_FLASH_ATTR begin(void);
 	// Wire function
-	void begin(byte address);
+	void ICACHE_FLASH_ATTR begin(byte address);
 	// Wire function
-	void begin(int address);
+	void ICACHE_FLASH_ATTR begin(int address);
 
-	void pin_mode(byte pinNum, byte mode);
-	void pin_write(byte pinNum, boolean level);
-	int  pin_read(byte pinNum);
+	void ICACHE_FLASH_ATTR pin_mode(byte pinNum, byte mode);
+	void ICACHE_FLASH_ATTR pin_write(byte pinNum, boolean level);
+	int  ICACHE_FLASH_ATTR pin_read(byte pinNum);
 	// read initial value for pinState
-	word pinState_set( );
+	word ICACHE_FLASH_ATTR pinState_set( );
 	// write a whole word to i2c port
-	void port_write( word i2cportval );
+	void ICACHE_FLASH_ATTR port_write( word i2cportval );
 	// access functions for IODIR state copy
-	word iodir_read( );
-	void iodir_write( word iodir );
+	word ICACHE_FLASH_ATTR iodir_read( );
+	void ICACHE_FLASH_ATTR iodir_write( word iodir );
 
 private:
     // I2C device address
@@ -76,7 +78,7 @@ private:
 //	byte pin_iosetup( );
 	// MC17 setup
 	word iodir_state;    // copy of IODIR register
-	void _begin( void );
+	void ICACHE_FLASH_ATTR _begin( void );
 };
 
 

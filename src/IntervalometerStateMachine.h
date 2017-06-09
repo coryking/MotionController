@@ -44,32 +44,32 @@ public:
         return currentFrame;
     }
 
-    void setStepperRunningCallback(const StepperRunningCallbackFn &getRunningCallback) {
+    void ICACHE_FLASH_ATTR setStepperRunningCallback(const StepperRunningCallbackFn &getRunningCallback) {
         IntervalometerStateMachine::getRunningCallback = getRunningCallback;
     }
 
-    void setMoveStepperToRelativeCallback(const MoveStepperToPositionFn &moveStepperToRelativePositionCb) {
+    void ICACHE_FLASH_ATTR  setMoveStepperToRelativeCallback(const MoveStepperToPositionFn &moveStepperToRelativePositionCb) {
         IntervalometerStateMachine::moveStepperToRelativePositionCb = moveStepperToRelativePositionCb;
     }
 
-    void setMoveStepperToAbsolutePositionCb(const MoveStepperToPositionFn &moveStepperToAbsolutePositionCb) {
+    void ICACHE_FLASH_ATTR  setMoveStepperToAbsolutePositionCb(const MoveStepperToPositionFn &moveStepperToAbsolutePositionCb) {
         IntervalometerStateMachine::moveStepperToAbsolutePositionCb = moveStepperToAbsolutePositionCb;
     }
 
-    void setOpenShutterCb(const InvokeShutterCallbackFn &openShutterCb) {
+    void ICACHE_FLASH_ATTR  setOpenShutterCb(const InvokeShutterCallbackFn &openShutterCb) {
         IntervalometerStateMachine::openShutterCb = openShutterCb;
     }
 
-    void setCloseShutterCb(const InvokeShutterCallbackFn &closeShutterCb) {
+    void ICACHE_FLASH_ATTR  setCloseShutterCb(const InvokeShutterCallbackFn &closeShutterCb) {
         IntervalometerStateMachine::closeShutterCb = closeShutterCb;
     }
 
-    void start(IntervalometerSettings *settings) {
+    void ICACHE_FLASH_ATTR  start(IntervalometerSettings *settings) {
         this->settings = settings;
         this->transitionToStart();
     }
 
-    void run() {
+    void ICACHE_FLASH_ATTR  run() {
         unsigned long currentTime = millis();
         unsigned long currentDuration = currentTime - startMs;
         bool isStopped = !invokeGetRunningCallback();
@@ -121,7 +121,7 @@ public:
     }
 
 protected:
-    void setCurrentState(IntervalometerStates state) {
+    void ICACHE_FLASH_ATTR  setCurrentState(IntervalometerStates state) {
         Serial.print("Going to state: ");
         Serial.print(state);
         if(this->settings != NULL) {
@@ -156,38 +156,38 @@ private:
         }
     }
 
-    void transitionToStart() {
+    void ICACHE_FLASH_ATTR  transitionToStart() {
         this->currentFrame = 1;
         this->startMs = millis();
         this->setCurrentState(START);
     }
 
-    void transitionToPositioning() {
+    void ICACHE_FLASH_ATTR  transitionToPositioning() {
         moveStepperToAbsolutePositionCb(settings->getStartPosition());
         this->setCurrentState(POSITIONING);
     }
 
-    void transitionToShutter() {
+    void ICACHE_FLASH_ATTR  transitionToShutter() {
         startMs = millis();
         this->openShutterCb();
         this->setCurrentState(SHUTTER);
     }
 
-    void transitionToShutterWait() {
+    void ICACHE_FLASH_ATTR  transitionToShutterWait() {
         this->closeShutterCb();
         this->setCurrentState(SHUTTER_WAIT);
     }
 
-    void transitionToShuttle() {
+    void ICACHE_FLASH_ATTR  transitionToShuttle() {
         moveStepperToRelativePositionCb(settings->getRelativeStepsPerFrame());
         this->setCurrentState(SHUTTLE);
     }
 
-    void transitionToPaused() {
+    void ICACHE_FLASH_ATTR  transitionToPaused() {
         this->setCurrentState(PAUSED);
     }
 
-    void transitionToFinished() {
+    void ICACHE_FLASH_ATTR  transitionToFinished() {
         this->setCurrentState(FINISHED);
     }
 

@@ -17,7 +17,7 @@ time_t syncRtcTime() {
 }
 
 
-void setupRtc(Print *display) {
+void ICACHE_FLASH_ATTR setupRtc(Print *display) {
     globalRtc.Begin();
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
     globalRtc.Enable32kHzPin(false);
@@ -79,7 +79,7 @@ uint16_t getIntFromString(String str, uint startIndex, uint endIndex) {
     return subst.toInt();
 }
 
-RtcDateTime parseDateTimeString(String dtString) {
+RtcDateTime ICACHE_FLASH_ATTR parseDateTimeString(String dtString) {
     if(dtString.length() != 14)
         return NULL;
 
@@ -96,7 +96,7 @@ RtcDateTime parseDateTimeString(String dtString) {
 }
 
 
-RtcDateTime parseTimeString(String dtString) {
+RtcDateTime ICACHE_FLASH_ATTR parseTimeString(String dtString) {
     auto now = globalRtc.GetDateTime();
     if(dtString.length() != 8)
         return now;

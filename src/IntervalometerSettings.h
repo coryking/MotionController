@@ -26,43 +26,43 @@ public:
         return totalFrames;
     }
 
-    long getTotalSteps() const {
+    long ICACHE_FLASH_ATTR  getTotalSteps() const {
         return endPosition - startPosition;;
     }
 
-    long getStartPosition() const {
+    long ICACHE_FLASH_ATTR  getStartPosition() const {
         return startPosition;
     }
 
-    long getEndPosition() const {
+    long ICACHE_FLASH_ATTR  getEndPosition() const {
         return endPosition;
     }
 
-    long getStepsPerFrame() {
+    long ICACHE_FLASH_ATTR  getStepsPerFrame() {
         return getTotalSteps() / getTotalFrames();;
     }
 
-    long getShutterTriggerDurationMs() const {
+    long ICACHE_FLASH_ATTR  getShutterTriggerDurationMs() const {
         return shutterTriggerDurationMs;
     }
 
-    void setTotalFrames(int totalFrames) {
+    void ICACHE_FLASH_ATTR  setTotalFrames(int totalFrames) {
         IntervalometerSettings::totalFrames = totalFrames;
     }
 
-    void setIntervalMs(long intervalMs) {
+    void ICACHE_FLASH_ATTR  setIntervalMs(long intervalMs) {
         IntervalometerSettings::intervalMs = intervalMs;
     }
 
-    void setShutterSpeedMs(long shutterSpeedMs) {
+    void ICACHE_FLASH_ATTR  setShutterSpeedMs(long shutterSpeedMs) {
         IntervalometerSettings::shutterSpeedMs = shutterSpeedMs;
     }
 
-    void setStartPosition(long startPosition) {
+    void ICACHE_FLASH_ATTR  setStartPosition(long startPosition) {
         IntervalometerSettings::startPosition = startPosition;
     }
 
-    void setEndPosition(long endPosition) {
+    void ICACHE_FLASH_ATTR  setEndPosition(long endPosition) {
         IntervalometerSettings::endPosition = endPosition;
     }
 
@@ -70,7 +70,7 @@ public:
      * Get the relative number of steps for each frame.  Will be negative if you need to move backwards each frame...
      * @return
      */
-    long getRelativeStepsPerFrame() {
+    long ICACHE_FLASH_ATTR  getRelativeStepsPerFrame() {
         if(endPosition < startPosition) {
             return -getStepsPerFrame();
         } else {
@@ -78,11 +78,11 @@ public:
         }
     }
 
-    long getIntervalMs() const {
+    long ICACHE_FLASH_ATTR  getIntervalMs() const {
         return intervalMs;
     }
 
-    long getShutterSpeedMs() const {
+    long ICACHE_FLASH_ATTR  getShutterSpeedMs() const {
         return shutterSpeedMs;
     }
 
@@ -90,7 +90,7 @@ public:
         return startTime;
     }
 
-    void setStartTime(const RtcDateTime &startTime) {
+    void ICACHE_FLASH_ATTR  setStartTime(const RtcDateTime &startTime) {
         IntervalometerSettings::startTime = startTime;
         _isStartTimeSet=true;
     }
