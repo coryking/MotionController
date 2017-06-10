@@ -98,9 +98,12 @@ public:
     bool isStartTimeSet() {
         return _isStartTimeSet;
     }
+    uint estimateDurationMs(uint requestedFrames) {
+        return this->getIntervalMs() * requestedFrames;
+    }
 
     uint estimateDuration(uint requestedFrames) {
-        return (this->getIntervalMs() * requestedFrames) / 1000;
+        return (estimateDurationMs(requestedFrames)) / 1000;
     }
 
 private:

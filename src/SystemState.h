@@ -66,6 +66,26 @@ public:
         return settings;
     }
 
+    bool isShooting() {
+        return (
+            GetCurrentState() == SystemState::ST_SHOOTING_FRAME ||
+            GetCurrentState() == SystemState::ST_SHOOTING_PAUSED ||
+            GetCurrentState() == SystemState::ST_SHOOTING_SHUTTER ||
+            GetCurrentState() == SystemState::ST_SHOOTING_SHUTTER_WAIT ||
+            GetCurrentState() == SystemState::ST_SHOOTING_POSITIONING ||
+            GetCurrentState() == SystemState::ST_SHOOTING_SHUTTLE ||
+            GetCurrentState() == SystemState::ST_SHOOTING
+        );
+    }
+
+    uint getFramesRemaining() {
+        if (isShooting()) {
+            return this->settings->getTotalFrames() - currentFrame;
+        } else {
+            return 0;
+        }
+    }
+
     bool isKeyboardActive() {
         return this->_isKeyboardActive;
     }
@@ -76,11 +96,26 @@ public:
 
     uint getEstimatedDuration(TextData* data) {
         long frames = data->text.toInt();
-        return this->settings->estimateDuration(frames);
+        return getEstimatedDuration(frames);
+    }
+    uint getEstimatedDuration(long remainingFrames) {
+        if(remainingFrames > 0) {
+            return this->settings->estimateDuration(remainingFrames);
+        } else {
+            return 0;
+        }
     }
 
-    void showTimeRemaining(uint32_t delta);
-
+    uint getEstimatedDurationForTimelapse() {
+        if(isShooting()) {
+            auto remainingFullMs = this->settings->estimateDurationMs(getFramesRemaining() - 1);
+            unsigned long currentDuration = millis() - startMs;
+            auto remainingOnFrame = this->settings->getIntervalMs() - currentDuration;
+            return (remainingFullMs + remainingOnFrame) / 1000;
+        } else {
+            return 0;
+        }
+    }
 
     // state enumeration order must match the order of state
     // method entries in the state map
@@ -122,8 +157,6 @@ private:
     KeyboardActiveFn _activeCb;
     KeyboardActiveFn _inactiveCb;
     SetKeyboardBufferFn _setBufferCb;
-
-    Task* _showRemainingTime;
 
     // when the shutter started
     unsigned long startMs;
@@ -234,15 +267,5 @@ private:
 
 };
 
-
-class ShutterTimeRemaining : public Task {
-public:
-    ShutterTimeRemaining(SystemState* systemState, uint32_t timeInterval) :Task(timeInterval), _systemState(systemState) {}
-private:
-    SystemState* _systemState;
-    virtual void OnUpdate(uint32_t deltaTime) {
-        _systemState->showTimeRemaining(deltaTime);
-    }
-};
 
 #endif //MOTIONCONTROLLER_SYSTEMSTATE_H

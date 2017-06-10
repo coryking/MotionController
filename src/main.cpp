@@ -57,6 +57,15 @@ void doNothingDurationCallback(unsigned long duration) {}
 
 FunctionTask taskHandleLED(OnHandleLedTask, MsToTaskTime(50));
 
+void OnShowEstimatedDuration(uint32_t deltaTime)
+{
+    if(systemState.isShooting()) {
+        auto estimatedDuration = systemState.getEstimatedDurationForTimelapse();
+        showTimelapseTimeRemaining(estimatedDuration);
+    }
+}
+FunctionTask taskShowEstimatedDuration(OnShowEstimatedDuration, MsToTaskTime(100)); // turn on the led in 400ms
+
 void setup()
 {
     Serial.begin(9600);
@@ -114,6 +123,7 @@ void setup()
 
     taskManager.StartTask(&taskHandleLED);
     taskManager.StartTask(&theLcdState);
+    taskManager.StartTask(&taskShowEstimatedDuration);
 
     homer.StartHoming();
     systemState.HomeSlider();

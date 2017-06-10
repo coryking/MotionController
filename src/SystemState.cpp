@@ -661,13 +661,7 @@ STATE_DEFINE(SystemState, AskStartShooting, NoEventData) {
     showYesNowScreen("Begin Shooting?");
 }
 
-void ICACHE_FLASH_ATTR  SystemState::showTimeRemaining(uint32_t delta) {
-    unsigned long currentDuration = millis() - this->startMs;
-    displayTimeRemaining(currentDuration, this->settings->getIntervalMs());
-}
-
 SystemState::SystemState() : StateMachine(ST_MAX_STATES) {
     settings = new IntervalometerSettings();
-    //_showRemainingTime = new ShutterTimeRemaining(this, MsToTaskTime(250));
 }
 

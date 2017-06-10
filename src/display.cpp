@@ -160,14 +160,6 @@ void ICACHE_FLASH_ATTR showIdleMenu() {
     printText("C - Set Time", 0, 2);
 }
 
-void ICACHE_FLASH_ATTR displayTimeRemaining(long currentDuration, long interval) {
-    long remaining = (interval - currentDuration) / 1000;
-    lcd.setCursor(0, 3);
-    lcd.print(remaining);
-    lcd.print("s remaining");
-}
-
-
 const char *spaceString = "                    ";
 String fillString(String str, uint8_t fillTo) {
     if (str.length() >= fillTo)
@@ -186,7 +178,7 @@ void ICACHE_FLASH_ATTR OnHandleLedTask(uint32_t) {
 
 }
 
-void showEstimatedDuration(ulong durationSecs) {
+void ICACHE_FLASH_ATTR showEstimatedDuration(ulong durationSecs) {
     char datestring[20];
 
     snprintf_P(datestring,
@@ -197,4 +189,18 @@ void showEstimatedDuration(ulong durationSecs) {
         numberOfSeconds(durationSecs)
     );
     printText(datestring, 0, 2);
+}
+
+void ICACHE_FLASH_ATTR showTimelapseTimeRemaining(long estimatedDuration) {
+    char datestring[20];
+    RtcDateTime dt = globalRtc.GetDateTime();
+    RtcDateTime estFinish = dt + estimatedDuration;
+    snprintf_P(datestring,
+               20,
+               PSTR("Finish: %02u:%02u:%02u"),
+               estFinish.Hour(),
+               estFinish.Minute(),
+               estFinish.Second()
+    );
+    rightAlign(datestring, 3);
 }

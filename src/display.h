@@ -78,7 +78,8 @@ void showEstimatedDuration(ulong);
 void showYesNowScreen(String question);
 void showWaitingForAlarmScreen(const RtcDateTime &startTime);
 
-void displayTimeRemaining(long currentDuration, long interval);
+void showTimelapseTimeRemaining(long estimatedDuration);
+
 void showShootingFinished();
 void showShootingScreen(String action, String action2, long currentFrame, long framesRemaining);
 
