@@ -21,7 +21,7 @@ void ICACHE_FLASH_ATTR setupRtc(Print *display) {
     globalRtc.Begin();
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
     globalRtc.Enable32kHzPin(false);
-    globalRtc.SetSquareWavePin(DS3231SquareWavePin_ModeAlarmOne);
+    globalRtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone);
 
     if (! globalRtc.IsDateTimeValid()) {
         // following line sets the RTC to the date & time this sketch was compiled
@@ -47,6 +47,8 @@ void ICACHE_FLASH_ATTR setupRtc(Print *display) {
 
     display->print("Found RTC Device");
 
+    globalRtc.LatchAlarmsTriggeredFlags();
+
     setSyncProvider(syncRtcTime);
 
 }
@@ -65,10 +67,6 @@ bool Alarmed() {
         {
             wasAlarmed = true;
             Serial.println("alarm one triggered");
-        }
-        if (flag & DS3231AlarmFlag_Alarm2)
-        {
-            Serial.println("alarm two triggered");
         }
     //}
     return wasAlarmed;

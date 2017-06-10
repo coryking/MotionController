@@ -8,6 +8,8 @@
 
 hd44780_I2Cexp lcd(LCD_I2CADDR, I2Cexp_BOARD_SAINSMART);
 
+LcdState theLcdState;
+
 void setupLcd() {
     lcd.begin(LCD_COLS, LCD_ROWS);
     lcd.clear();

@@ -24,7 +24,6 @@
 #define TIME_PER_SHOT 250
 #define TIME_FOR_SHUTTER_TRIGGER 200
 
-
 long sliderDistanceSteps = 0;
 
 // Define a stepper and the pins it will use
@@ -57,7 +56,6 @@ FunctionTask taskHandleLED(OnHandleLedTask, MsToTaskTime(50));
 
 void setup()
 {
-
     Serial.begin(9600);
     Serial.println("Hello World");
     randomSeed(analogRead(0));
@@ -112,6 +110,7 @@ void setup()
     });
 
     taskManager.StartTask(&taskHandleLED);
+    taskManager.StartTask(&theLcdState);
 
     homer.StartHoming();
     systemState.HomeSlider();
@@ -167,8 +166,13 @@ void saveKeypadData() {
 // Taking care of some special events.
 void keypadEvent(KeypadEvent key){
     KeyState state = keypad.getState();
+
     switch (state){
         case PRESSED:
+
+            if(theLcdState.markLastKeypress(millis()))
+                return;
+
             Serial.println(key);
             if(systemState.isKeyboardActive()) {
                 switch(key) {

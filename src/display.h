@@ -16,9 +16,51 @@
 #define LCD_ROWS 4
 #define LCD_COLS 20
 
+// how long after a keypress before we turn off the lcd?
+#define LCD_TIMEOUT 10 * 1000
+
 extern hd44780_I2Cexp lcd;
 
 void setupLcd();
+
+class LcdState : public Task {
+public:
+    LcdState() : Task(MsToTaskTime(500)) {}
+    bool isOn() { return _isOn; }
+    bool markLastKeypress(ulong lastTime) {
+        last_keypress = lastTime;
+        if(!_isOn) {
+            Serial.println("Going On");
+            _isOn = true;
+            lcd.on();
+            return true;
+        }
+        return false;
+    }
+    bool handleLcdState() {
+        ulong t_diff = millis() - last_keypress;
+        Serial.println(t_diff);
+        if(_isOn && (t_diff > LCD_TIMEOUT)) {
+            Serial.println("Going Off");
+            lcd.off();
+            _isOn = false;
+            return true;
+        }
+        return false;
+    }
+
+private:
+    virtual void OnUpdate(uint32_t deltaTime) {
+        this->handleLcdState();
+    }
+
+private:
+    bool _isOn = true;
+    ulong last_keypress;
+
+};
+
+extern LcdState theLcdState;
 
 void showConfigIvFrames();
 void showConfigIvShutterSpeed();
