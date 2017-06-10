@@ -220,8 +220,8 @@ void ICACHE_FLASH_ATTR  SystemState::Back() {
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN)   // ST_WAIT_FOR_ALARM
                     TRANSITION_MAP_ENTRY(CANNOT_HAPPEN) // ST_SHOOTING
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_INTERVALOMETER
-                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_CONFIG_IV_FRAMES
-                    TRANSITION_MAP_ENTRY(ST_CONFIG_IV_FRAMES) // ST_CONFIG_IV_SHUTTER_SPEED
+                    TRANSITION_MAP_ENTRY(ST_CONFIG_IV_FRAMES) // ST_CONFIG_IV_FRAMES
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_CONFIG_IV_SHUTTER_SPEED
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_SHUTTER_SPEED) // ST_CONFIG_IV_INTERVAL
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_SHUTTER_SPEED) // ST_ALARM_TIME
@@ -492,7 +492,9 @@ STATE_DEFINE(SystemState, ConfigIvShutterSpeed, NoEventData) {
 
 STATE_DEFINE(SystemState, ConfigIvInterval, NoEventData) {
     showConfigIvInterval();
-    callBufferCb(String(this->settings->getIntervalMs() / 1000));
+    // Make sure we start with a value that is sane...
+    auto proposed_interval = max(this->settings->getShutterSpeedMs()+ (2 * 1000), this->settings->getIntervalMs());
+    callBufferCb(String(proposed_interval / 1000));
 }
 
 STATE_DEFINE(SystemState, ConfigAlarm, NoEventData) {

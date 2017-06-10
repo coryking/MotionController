@@ -3,6 +3,7 @@
 //
 
 #include <Arduino.h>
+#include <Time.h>
 #include "display.h"
 #include "rtc.h"
 
@@ -183,4 +184,17 @@ void ICACHE_FLASH_ATTR OnHandleLedTask(uint32_t) {
 
     analogWrite(LCD_PWM_PIN, val);
 
+}
+
+void showEstimatedDuration(ulong durationSecs) {
+    char datestring[20];
+
+    snprintf_P(datestring,
+        20,
+        PSTR("Est Dur: %02u:%02u:%02u"),
+        numberOfHours(durationSecs),
+        numberOfMinutes(durationSecs),
+        numberOfSeconds(durationSecs)
+    );
+    printText(datestring, 0, 2);
 }

@@ -99,6 +99,10 @@ public:
         return _isStartTimeSet;
     }
 
+    uint estimateDuration(uint requestedFrames) {
+        return (this->getIntervalMs() * requestedFrames) / 1000;
+    }
+
 private:
     int totalFrames;
 

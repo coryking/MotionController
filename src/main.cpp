@@ -45,6 +45,9 @@ void limitSwitch_pressedCallback() {
 }
 
 void keypadEvent(KeypadEvent key);
+
+TextData *getTextData();
+
 TextLine tl;
 ulong last_display;
 
@@ -156,11 +159,16 @@ void handleMotorRunState() {
 }
 
 void saveKeypadData() {
+    TextData *data = getTextData();
+    systemState.SaveData(data);
+}
+
+TextData *getTextData() {
     auto str = tl.text;
     str.trim();
     auto data = new TextData;
     data->text = str;
-    systemState.SaveData(data);
+    return data;
 }
 
 // Taking care of some special events.
@@ -189,12 +197,22 @@ void keypadEvent(KeypadEvent key){
                     case 'B':
                         saveKeypadData();
                         systemState.BeginShooting();
+                        break;
+                    case 'C':
+                        systemState.Back();
+                        break;
                     default:
                         tl.text = tl.text + key;
                         tl.position = tl.text.length() - 1;
                         tl.lastmod = millis();
+
+                        if(systemState.showEstimatedDuration()) {
+                            auto estDuration = systemState.getEstimatedDuration(getTextData());
+                            showEstimatedDuration(estDuration);
+                        }
                         break;
                 }
+
             } else if (systemState.GetCurrentState() == SystemState::ST_IDLE) {
                 switch(key) {
                     case 'A':

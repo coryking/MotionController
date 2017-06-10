@@ -69,6 +69,16 @@ public:
     bool isKeyboardActive() {
         return this->_isKeyboardActive;
     }
+
+    bool showEstimatedDuration() {
+        return (this->GetCurrentState() == ST_CONFIG_IV_FRAMES);
+    }
+
+    uint getEstimatedDuration(TextData* data) {
+        long frames = data->text.toInt();
+        return this->settings->estimateDuration(frames);
+    }
+
     void showTimeRemaining(uint32_t delta);
 
 

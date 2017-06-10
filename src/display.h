@@ -74,6 +74,8 @@ void showHomingUpperBound(long);
 void showHomed();
 void showIdleMenu();
 
+void showEstimatedDuration(ulong);
+
 void showYesNowScreen(String question);
 void showWaitingForAlarmScreen(const RtcDateTime &startTime);
 
