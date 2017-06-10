@@ -415,9 +415,9 @@ void ICACHE_FLASH_ATTR  SystemState::NextStep() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_TIME
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_ALARM_SETPOINT
-                    TRANSITION_MAP_ENTRY(ST_CONFIG_IV_SHUTTER_SPEED) // ST_SAVE_IV_FRAMES,
+                    TRANSITION_MAP_ENTRY(ST_ASK_START_SHOOTING) // ST_SAVE_IV_FRAMES,
                     TRANSITION_MAP_ENTRY(ST_CONFIG_IV_INTERVAL) // ST_SAVE_IV_SHUTTER_SPEED,
-                    TRANSITION_MAP_ENTRY(ST_ASK_START_SHOOTING) // ST_SAVE_IV_INTERVAL,
+                    TRANSITION_MAP_ENTRY(ST_CONFIG_IV_FRAMES) // ST_SAVE_IV_INTERVAL,
                     TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(ST_ASK_START_ALARM) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
@@ -474,7 +474,7 @@ EXIT_DEFINE(SystemState, ExitWaitForAlarm) {
 }
 
 STATE_DEFINE(SystemState, ConfigIntervalometer, NoEventData) {
-    InternalEvent(ST_CONFIG_IV_FRAMES); // Jump right over to first part of wizard....
+    InternalEvent(ST_CONFIG_IV_SHUTTER_SPEED); // Jump right over to first part of wizard....
 }
 
 
