@@ -64,7 +64,7 @@ void OnShowEstimatedDuration(uint32_t deltaTime)
         showTimelapseTimeRemaining(estimatedDuration);
     }
 }
-FunctionTask taskShowEstimatedDuration(OnShowEstimatedDuration, MsToTaskTime(100)); // turn on the led in 400ms
+FunctionTask taskShowEstimatedDuration(OnShowEstimatedDuration, MsToTaskTime(250)); // turn on the led in 400ms
 
 void setup()
 {
