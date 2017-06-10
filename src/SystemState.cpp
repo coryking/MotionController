@@ -313,7 +313,7 @@ void ICACHE_FLASH_ATTR  SystemState::GoIdle() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_HOMING
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // ST_IDLE
                     TRANSITION_MAP_ENTRY(ST_IDLE)   // ST_WAIT_FOR_ALARM
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_INTERVALOMETER
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_FRAMES
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_CONFIG_IV_SHUTTER_SPEED
@@ -327,12 +327,12 @@ void ICACHE_FLASH_ATTR  SystemState::GoIdle() {
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_TIME,
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_ALARM_SETPOINT
                     TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SAVE_HOMING_DATA,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_FRAME,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_POSITIONING,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTER_WAIT,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_SHUTTLE,
-                    TRANSITION_MAP_ENTRY(EVENT_IGNORED) // ST_SHOOTING_PAUSED,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING_FRAME,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING_POSITIONING,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING_SHUTTER,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING_SHUTTER_WAIT,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING_SHUTTLE,
+                    TRANSITION_MAP_ENTRY(ST_IDLE) // ST_SHOOTING_PAUSED,
                     TRANSITION_MAP_ENTRY(ST_IDLE) // ST_ASK_START_ALARM,
                     TRANSITION_MAP_ENTRY(ST_IDLE) // ST_ASK_START_SHOOTING,
     END_TRANSITION_MAP(NULL)
@@ -596,6 +596,11 @@ STATE_DEFINE(SystemState, ShootingFrame, NoEventData) {
     InternalEvent(ST_SHOOTING_SHUTTER);
 }
 
+EXIT_DEFINE(SystemState, ExitShootingFrame) {
+    Serial.println("Setting camera pin low!");
+    digitalWrite(CAMERA_PIN, LOW);
+}
+
 
 // Do not fucking go into some state when the god damn thing is moving....
 GUARD_DEFINE(SystemState, IsNotMoving, NoEventData) {
@@ -605,11 +610,8 @@ GUARD_DEFINE(SystemState, IsNotMoving, NoEventData) {
 STATE_DEFINE(SystemState, ShootingShutter, NoEventData) {
     unsigned long currentDuration = millis() - startMs;
     if(currentDuration >= this->settings->getShutterTriggerDurationMs()) {
-        Serial.println("Setting camera pin low!");
-        digitalWrite(CAMERA_PIN, LOW);
-        InternalEvent(ST_SHOOTING_SHUTTER_WAIT);
         this->showShootingDisplay("Waiting for shutter.");
-
+        InternalEvent(ST_SHOOTING_SHUTTER_WAIT);
     }
 }
 

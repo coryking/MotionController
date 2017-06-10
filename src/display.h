@@ -17,7 +17,7 @@
 #define LCD_COLS 20
 
 // how long after a keypress before we turn off the lcd?
-#define LCD_TIMEOUT 10 * 1000
+#define LCD_TIMEOUT 60 * 1000
 
 extern hd44780_I2Cexp lcd;
 
@@ -30,7 +30,7 @@ public:
     bool markLastKeypress(ulong lastTime) {
         last_keypress = lastTime;
         if(!_isOn) {
-            Serial.println("Going On");
+            Serial.println("LCD Going On");
             _isOn = true;
             lcd.on();
             return true;
@@ -39,9 +39,8 @@ public:
     }
     bool handleLcdState() {
         ulong t_diff = millis() - last_keypress;
-        Serial.println(t_diff);
         if(_isOn && (t_diff > LCD_TIMEOUT)) {
-            Serial.println("Going Off");
+            Serial.println("LCD Going Off");
             lcd.off();
             _isOn = false;
             return true;

@@ -192,6 +192,7 @@ private:
     ENTRY_DECLARE(SystemState, EnterIdle, NoEventData);
     EXIT_DECLARE(SystemState, ExitIdle);
     STATE_DECLARE(SystemState, ShootingFrame, NoEventData);
+    EXIT_DECLARE(SystemState, ExitShootingFrame);
     STATE_DECLARE(SystemState, ShootingPositioning, NoEventData);
     STATE_DECLARE(SystemState, ShootingShutter, NoEventData);
     STATE_DECLARE(SystemState, ShootingShutterWait, NoEventData);
@@ -221,7 +222,7 @@ private:
         STATE_MAP_ENTRY_EX(&SaveAlarmTime)
         STATE_MAP_ENTRY_EX(&SaveAlarmSetPoint)
         STATE_MAP_ENTRY_EX(&SaveHomingData)
-        STATE_MAP_ENTRY_EX(&ShootingFrame)
+        STATE_MAP_ENTRY_ALL_EX(&ShootingFrame, 0, 0, &ExitShootingFrame)
         STATE_MAP_ENTRY_EX(&ShootingPositioning)
         STATE_MAP_ENTRY_ALL_EX(&ShootingShutter, &IsNotMoving, 0,0)
         STATE_MAP_ENTRY_EX(&ShootingShutterWait)
