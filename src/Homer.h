@@ -8,7 +8,7 @@
 #include <functional>
 #include <Arduino.h>
 #include <AccelStepper.h>
-#include <InputDebounce.h>
+#include <Button.h>
 
 #include "StateMachine.h"
 #include "Pins.h"
@@ -37,7 +37,7 @@ public:
         return _sliderDistance;
     }
 
-    void setLimitSwitch(InputDebounce *limitSwitch) {
+    void setLimitSwitch(Button *limitSwitch) {
         this->_limitSwitch = limitSwitch;
     }
 
@@ -51,7 +51,7 @@ private:
     ulong _sliderDistance;
     SliderHomedCb sliderSetCb;
     StateChangedCb startedHomingCb;
-    InputDebounce* _limitSwitch;
+    Button* _limitSwitch;
 
     AccelStepper* stepper;
 

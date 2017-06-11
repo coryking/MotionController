@@ -51,7 +51,11 @@ STATE_DEFINE(Homer, Unhomed, NoEventData) {
 }
 
 STATE_DEFINE(Homer, BeginHoming, NoEventData) {
-    if(_limitSwitch.)
+    if(_limitSwitch->isPressed()) {
+        Serial.println("Switch was pressed already!");
+    } else {
+        InternalEvent(ST_FINDING_UPPER);
+    }
 }
 
 STATE_DEFINE(Homer, FindingUpper, NoEventData) {

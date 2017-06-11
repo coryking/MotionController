@@ -16,7 +16,11 @@
 #define SDA_PIN D5
 #define SCL_PIN D6
 
-#define LIMIT_SWITCH D7 // yellow wire
+#define LIMIT_SWITCH_PIN D7 // yellow wire
+#define LIMIT_SWITCH_PULLUP true
+#define LIMIT_SWITCH_INVERT true
+#define DEBOUNCE_MS 20
+
 #define CAMERA_PIN D8 // green wire
 
 #define POT_PIN A0

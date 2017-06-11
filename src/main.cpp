@@ -1,5 +1,5 @@
 #include <AccelStepper.h>
-#include <InputDebounce.h>
+#include <Button.h>
 
 #include <IntervalometerSettings.h>
 #include <IntervalometerStateMachine.h>
@@ -17,7 +17,6 @@
 #include "SystemState.h"
 #include "Homer.h"
 
-#define BUTTON_DEBOUNCE_DELAY   20   // [ms]
 
 #define TOTAL_SHOTS 2
 #define INTERVAL 1000
@@ -35,14 +34,10 @@ AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN); // Defaults to Ac
 SystemState systemState;
 Homer homer;
 
-static InputDebounce limitSwitch; // not enabled yet, setup has to be called later
+Button limitSwitch(LIMIT_SWITCH_PIN, LIMIT_SWITCH_PULLUP, LIMIT_SWITCH_INVERT, DEBOUNCE_MS);
 
 bool previousMotorRunState = false;
 void handleMotorRunState();
-
-void limitSwitch_pressedCallback() {
-    homer.LimitSwitchPressed();
-}
 
 void keypadEvent(KeypadEvent key);
 
@@ -80,9 +75,6 @@ void setup()
     setupKeypad();
     keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
     setupLcd();
-
-    limitSwitch.registerCallbacks(limitSwitch_pressedCallback, doNothingCallback, doNothingDurationCallback);
-    limitSwitch.setup(LIMIT_SWITCH, BUTTON_DEBOUNCE_DELAY, InputDebounce::PIM_INT_PULL_UP_RES);
 
 
     // Change these to suit your stepper if you want
@@ -132,9 +124,14 @@ void setup()
 
 void loop()
 {
-    unsigned long now = millis();
-    limitSwitch.process(now);
+
+    limitSwitch.read();
+    if(limitSwitch.wasPressed()) {
+        homer.LimitSwitchPressed();
+    }
+
     handleMotorRunState();
+
 
     if(Alarmed()) {
         systemState.AlarmFired();
