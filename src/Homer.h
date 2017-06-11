@@ -8,6 +8,7 @@
 #include <functional>
 #include <Arduino.h>
 #include <AccelStepper.h>
+#include <InputDebounce.h>
 
 #include "StateMachine.h"
 #include "Pins.h"
@@ -36,6 +37,10 @@ public:
         return _sliderDistance;
     }
 
+    void setLimitSwitch(InputDebounce *limitSwitch) {
+        this->_limitSwitch = limitSwitch;
+    }
+
     void setStepper(AccelStepper *stepper);
 
     void setSliderHomedCb(const SliderHomedCb &sliderSetCb);
@@ -46,6 +51,7 @@ private:
     ulong _sliderDistance;
     SliderHomedCb sliderSetCb;
     StateChangedCb startedHomingCb;
+    InputDebounce* _limitSwitch;
 
     AccelStepper* stepper;
 
@@ -70,6 +76,7 @@ private:
         ST_MOVING_TO_ZERO,
         ST_HOMED,
         ST_EMERGENCY_STOP,
+        ST_BEGIN_HOMING,
         ST_MAX_STATES
     };
 
@@ -79,6 +86,7 @@ private:
     STATE_DECLARE(Homer, MovingToZero, NoEventData);
     STATE_DECLARE(Homer, Homed, NoEventData);
     STATE_DECLARE(Homer, EmergencyStopped, NoEventData);
+    STATE_DECLARE(Homer, BeginHoming, NoEventData);
     GUARD_DECLARE(Homer, HasStepperSet, NoEventData);
 
     BEGIN_STATE_MAP_EX
@@ -88,6 +96,7 @@ private:
         STATE_MAP_ENTRY_ALL_EX(&MovingToZero, &HasStepperSet,0,0)
         STATE_MAP_ENTRY_EX(&Homed)
         STATE_MAP_ENTRY_EX(&EmergencyStopped)
+        STATE_MAP_ENTRY_EX(&BeginHoming)
     END_STATE_MAP_EX
 };
 

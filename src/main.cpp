@@ -103,6 +103,7 @@ void setup()
     systemState.setKeyboardBufferCb([](TextLine textLine) {
         tl = textLine;
     });
+    homer.setLimitSwitch(&limitSwitch);
     homer.setStepper(&stepper);
     homer.setSliderHomedCb([](ulong sliderDistance) {
         auto hd = new HomingData();
