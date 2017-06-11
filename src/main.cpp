@@ -50,7 +50,17 @@ ulong last_display;
 void doNothingCallback() {}
 void doNothingDurationCallback(unsigned long duration) {}
 
+
+
 FunctionTask taskHandleLED(OnHandleLedTask, MsToTaskTime(50));
+
+void OnCheckAlarmState(uint32_t deltaTime) {
+    if(Alarmed()) {
+        systemState.AlarmFired();
+    }
+}
+
+FunctionTask taskCheckAlarmState(OnCheckAlarmState, MsToTaskTime(500));
 
 void OnShowEstimatedDuration(uint32_t deltaTime)
 {
@@ -64,17 +74,23 @@ FunctionTask taskShowEstimatedDuration(OnShowEstimatedDuration, MsToTaskTime(250
 void setup()
 {
     Serial.begin(9600);
+    setupI2C();
+    setupLcd();
+
+    // read limit switch...
+    Serial.println(limitSwitch.read());
+    delay(200);
+    yield();
+    Serial.println(limitSwitch.read());
     Serial.println("Hello World");
     randomSeed(analogRead(0));
     pinMode(CAMERA_PIN, OUTPUT);
     digitalWrite(CAMERA_PIN, LOW);
     pinMode(RTC_INTERUPT_PIN, INPUT_PULLUP);
 
-    setupI2C();
     setupRtc(&Serial);
     setupKeypad();
     keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
-    setupLcd();
 
 
     // Change these to suit your stepper if you want
@@ -117,6 +133,7 @@ void setup()
     taskManager.StartTask(&taskHandleLED);
     taskManager.StartTask(&theLcdState);
     taskManager.StartTask(&taskShowEstimatedDuration);
+    taskManager.StartTask(&taskCheckAlarmState);
 
     homer.StartHoming();
     systemState.HomeSlider();
@@ -129,13 +146,8 @@ void loop()
     if(limitSwitch.wasPressed()) {
         homer.LimitSwitchPressed();
     }
-
+    homer.Poll();
     handleMotorRunState();
-
-
-    if(Alarmed()) {
-        systemState.AlarmFired();
-    }
 
     if(!homer.isEmergencyStopped()) {
         stepper.run();
@@ -231,6 +243,10 @@ void keypadEvent(KeypadEvent key){
                         break;
                     case 'C':
                         systemState.ShowTimeSettings();
+                        break;
+                    case 'D':
+                        homer.StartHoming();
+                        systemState.HomeSlider();
                         break;
                     default:
                         break;

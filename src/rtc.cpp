@@ -24,6 +24,7 @@ void ICACHE_FLASH_ATTR setupRtc(Print *display) {
     globalRtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone);
 
     if (! globalRtc.IsDateTimeValid()) {
+        Serial.println(F("Invalid date and time...."));
         // following line sets the RTC to the date & time this sketch was compiled
         globalRtc.SetDateTime(compiled);
         // This line sets the RTC with an explicit date & time, for example to set
@@ -46,6 +47,15 @@ void ICACHE_FLASH_ATTR setupRtc(Print *display) {
     }
 
     display->print("Found RTC Device");
+
+    DS3231AlarmOne alarm1(
+            0,
+            0,
+            0,
+            0,
+            DS3231AlarmOneControl_HoursMinutesSecondsDayOfMonthMatch
+    );
+    globalRtc.SetAlarmOne(alarm1);
 
     globalRtc.LatchAlarmsTriggeredFlags();
 

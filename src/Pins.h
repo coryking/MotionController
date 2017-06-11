@@ -30,7 +30,13 @@
 
 
 #define INFINITE_MOTION 100000
-#define BUFFER_STEPS 40 // "padding" for the limit switches...
+#define BUFFER_STEPS 50 // "padding" for the limit switches...
+
+#define NORMAL_MOTOR_SPEED 1000
+#define NORMAL_MOTOR_ACCEL 4000
+#define HOMING_MOTOR_SPEED 2000
+#define HOMING_MOTOR_ACCEL 2000
+#define WIGGLE_MOTOR_SPEED 50
 
 
 #endif //MOTIONCONTROLLER_PINS_H
